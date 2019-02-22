@@ -1,26 +1,13 @@
 from django.db import models
 from datetime import datetime
 
-from user.models import UserProfile
-
-
-# 科目信息
-class SubjectInfo(models.Model):
-    subject_name = models.CharField(max_length=20, default='', verbose_name='科目名称')
-    create_time = models.DateTimeField(default=datetime.now, verbose_name='创建时间')
-
-    class Meta:
-        verbose_name = '科目信息'
-        verbose_name_plural = verbose_name
-
-    def __str__(self):
-        return self.subject_name
+from user.models import UserProfile, SubjectInfo
 
 
 # 试题信息
 class TestQuestionInfo(models.Model):
     name = models.CharField(max_length=500, default='', verbose_name='试题题目')
-    subject = models.ForeignKey(SubjectInfo, on_delete=models.CASCADE, verbose_name='所属科目')
+    subject = models.ForeignKey(SubjectInfo, on_delete=models.CASCADE, verbose_name='所属科目', default='')
     score = models.IntegerField(default=0, verbose_name='分值')
     tq_type = models.CharField(
         choices=(('xz', '选择'), ('pd', '判断'), ('tk', '填空')), max_length=2, verbose_name='试题类型', default='xz'

@@ -1,17 +1,6 @@
 from django.contrib import admin
 
-from .models import SubjectInfo, TestQuestionInfo, OptionInfo
-
-
-# admin-科目信息注册
-@admin.register(SubjectInfo)
-class SubjectInfoAdmin(admin.ModelAdmin):
-    # admin中表头
-    list_display = ('subject_name', 'create_time')
-    # 搜索
-    search_fields = ('subject_name',)
-    # 分页
-    list_per_page = 20
+from .models import TestQuestionInfo, OptionInfo
 
 
 # admin-试题信息注册

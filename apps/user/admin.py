@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, EmailVerifyRecord, StudentsInfo, TeacherInfo
+from .models import UserProfile, EmailVerifyRecord, StudentsInfo, TeacherInfo, SubjectInfo
 
 
 # admin-用户信息注册
@@ -24,6 +24,17 @@ class EmailVerifyRecordAdmin(admin.ModelAdmin):
     list_per_page = 20
 
 
+# admin-科目信息注册
+@admin.register(SubjectInfo)
+class SubjectInfoAdmin(admin.ModelAdmin):
+    # admin中表头
+    list_display = ('subject_name', 'create_time')
+    # 搜索
+    search_fields = ('subject_name',)
+    # 分页
+    list_per_page = 20
+
+
 # admin-学生信息注册
 @admin.register(StudentsInfo)
 class StudentsInfoAdmin(admin.ModelAdmin):
@@ -39,7 +50,7 @@ class StudentsInfoAdmin(admin.ModelAdmin):
 @admin.register(TeacherInfo)
 class TeacherInfoAdmin(admin.ModelAdmin):
     # admin中表头
-    list_display = ('teacher_name', 'work_years', 'teacher_school')
+    list_display = ('teacher_name', 'work_years', 'teacher_school', 'subject')
     # 搜索
     search_fields = ('teacher_name', 'teacher_school')
     # 分页

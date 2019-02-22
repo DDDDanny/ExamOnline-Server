@@ -2,12 +2,13 @@ from django.db import models
 from datetime import datetime
 
 from testquestion.models import TestQuestionInfo
-from user.models import UserProfile, StudentsInfo
+from user.models import UserProfile, StudentsInfo, SubjectInfo
 
 
 # 试卷信息
 class TestPaperInfo(models.Model):
     name = models.CharField(max_length=50, default='', verbose_name='试卷名称')
+    subject = models.ForeignKey(SubjectInfo, on_delete=models.CASCADE, verbose_name='试卷所属科目', default='')
     tp_degree = models.CharField(
         choices=(('jd', '简单'), ('zd', '中等'), ('kn', '困难')), max_length=2, verbose_name='试卷难度', default='jd'
     )

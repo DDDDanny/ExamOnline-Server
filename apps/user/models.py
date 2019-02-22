@@ -45,6 +45,19 @@ class EmailVerifyRecord(models.Model):
         return '{0}({1})'.format(self.code, self.email)
 
 
+# 科目信息
+class SubjectInfo(models.Model):
+    subject_name = models.CharField(max_length=20, default='', verbose_name='科目名称')
+    create_time = models.DateTimeField(default=datetime.now, verbose_name='创建时间')
+
+    class Meta:
+        verbose_name = '科目信息'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.subject_name
+
+
 # 学生信息
 class StudentsInfo(models.Model):
     user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
@@ -63,9 +76,10 @@ class StudentsInfo(models.Model):
 
 # 老师信息
 class TeacherInfo(models.Model):
-    user = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     teacher_name = models.CharField(max_length=20, default='', verbose_name='老师姓名')
     work_years = models.IntegerField(default=0, verbose_name='工作年限')
+    subject = models.ForeignKey(SubjectInfo, on_delete=models.CASCADE, verbose_name='所属科目')
     teacher_school = models.CharField(max_length=100, default='', verbose_name='老师所在学校')
 
     class Meta:

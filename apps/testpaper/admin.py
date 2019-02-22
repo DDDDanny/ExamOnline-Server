@@ -7,7 +7,16 @@ from .models import TestPaperInfo, TestPaperTestQ, TestScores
 @admin.register(TestPaperInfo)
 class TestPaperInfoAdmin(admin.ModelAdmin):
     # admin中表头
-    list_display = ('name', 'tp_degree', 'total_score', 'passing_score', 'create_user', 'create_time', 'edit_time')
+    list_display = (
+        'name',
+        'subject',
+        'tp_degree',
+        'total_score',
+        'passing_score',
+        'create_user',
+        'create_time',
+        'edit_time',
+    )
     # 搜索
     search_fields = ('name',)
     # 分页
