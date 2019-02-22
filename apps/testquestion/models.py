@@ -33,7 +33,7 @@ class TestQuestionInfo(models.Model):
     is_share = models.BooleanField(default=False, verbose_name='是否分享')
     create_time = models.DateTimeField(default=datetime.now, verbose_name='创建时间')
     creat_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, verbose_name='创建人')
-    edit_time = models.DateTimeField(auto_now=True, verbose_name='创建时间')
+    edit_time = models.DateTimeField(auto_now=True, verbose_name='修改时间')
 
     class Meta:
         verbose_name = '试题信息'
