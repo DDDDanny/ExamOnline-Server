@@ -39,9 +39,7 @@
 
 #### 技术栈
 > 服务端：Python 3.7 + Django 2.1.4    
-> 前端：HTML+CSS+JavaScript+JQuery+Bootstrap  
 > 数据库：MySQL 5.7  
-> 后台管理系统：Django Admin
 
 ---
     PS：内容暂定，待完善。。。
