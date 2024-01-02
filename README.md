@@ -40,7 +40,22 @@
 
 #### 技术栈
 > 服务端：Python 3.8 + Django 4.3.8    
-> 数据库：MySQL 5.7  
+> 数据库：MySQL 8.2
+
+#### MySQL安装
+我是用Docker安装的MySQL，更加方便一些，下面👇是下载&启动命令：  
+##### 下载
+
+```
+docker pull mysql:8.2
+```
+
+##### 启动容器  
+
+```
+docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
+```
+
 
 ---
     PS：内容暂定，待完善。。。

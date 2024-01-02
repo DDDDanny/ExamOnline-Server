@@ -27,3 +27,7 @@ def api_response(code, msg, data=None):
         'msg': msg,
         'data': data
     })
+
+
+if __name__ == '__main__':
+    pass
