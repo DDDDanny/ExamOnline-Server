@@ -6,10 +6,11 @@
 
 from django.urls import path
 
-from .views import CreateUserView
+from .views import CreateUserView, ListUsersView
 
 urlpatterns = [
     path('createUser', CreateUserView.as_view(), name='create_user'),
+    path('listUsers', ListUsersView.as_view(), name='list_users'),
 ]
 
 
