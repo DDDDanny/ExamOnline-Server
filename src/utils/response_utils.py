@@ -22,11 +22,10 @@ class ResponseCode(Enum):
     # ··· 状态码可以自定义
 
 def api_response(code, msg, data=None):
-    return JsonResponse({
-        'code': code.value,
-        'msg': msg,
-        'data': data
-    })
+    if data is None:
+        return JsonResponse({ 'code': code.value,'msg': msg })
+    else:
+        return JsonResponse({ 'code': code.value, 'msg': msg,'data': data })
 
 
 if __name__ == '__main__':
