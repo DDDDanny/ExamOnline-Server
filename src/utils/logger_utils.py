@@ -6,6 +6,15 @@
 
 import logging
 
+def log_common(msg: str):
+    """
+    记录日志信息
+    Args:
+        msg (str): 日志信息
+    """
+    logger = logging.getLogger('django')
+    logger.info(msg)
+    
 
 def log_request(request_body: str):
     """
