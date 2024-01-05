@@ -17,7 +17,11 @@ class UserSerializer(serializers.ModelSerializer):
             'email', 'is_active', 'created_at', 'updated_at'
         ]
         # 将 'password' 字段设置为只写，以在响应中隐藏它
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': { 'write_only': True },
+            'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+            'updated_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+        }
 
 
 if __name__ == '__main__':
