@@ -36,7 +36,7 @@ class CreateUserView(APIView):
 
 class ListUsersView(ListAPIView):
     serializer_class = UserSerializer
-    def __get_queryset(self, request):
+    def get_queryset(self, request):
         # 获取查询参数
         username_query = request.query_params.get('username', None)
         # 构建查询集
@@ -47,9 +47,9 @@ class ListUsersView(ListAPIView):
         return queryset
 
     # 获取用户列表信息
-    def get(self, request):
+    def list(self, request):
         # 获取过滤后的用户数据
-        queryset = self.__get_queryset(request)
+        queryset = self.get_queryset(request)
         # 序列化用户数据
         serializer = UserSerializer(queryset, many=True)
         # 返回序列化后的数据
