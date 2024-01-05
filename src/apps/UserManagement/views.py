@@ -4,13 +4,14 @@
 # @File    : views.py
 # @Describe: User相关视图 
 
+
 from rest_framework.views import APIView
+from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 
 from .models import User
 from .serializers import UserSerializer
-from src.utils.logger_utils import log_request, log_response
 from src.utils.response_utils import ResponseCode, api_response
 
 
@@ -52,6 +53,16 @@ class ListUsersView(ListAPIView):
         # 返回序列化后的数据
         data = Response(serializer.data)
         return api_response(ResponseCode.SUCCESS, '查询成功', data.data)
+
+
+class LoginView(APIView):
+    # 用户登录
+    def post(self, request):
+        user = authenticate(request, username=request.data['username'], password=request.data['password'])
+        if user is not None:
+            return api_response(ResponseCode.SUCCESS, '登录成功')
+        else:
+            return api_response(ResponseCode.BAD_REQUEST, '登录失败！账号或密码错误！', request.data)
 
 
 if __name__ == '__main__':
