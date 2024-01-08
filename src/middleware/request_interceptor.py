@@ -17,7 +17,8 @@ class RequestInterceptorMiddleware:
         response = self.get_response(request)
         
         # 处理响应后的逻辑
-        self.log_response_body(response)
+        if response.status_code == 200:
+            self.log_response_body(response)
         
         return response
 
