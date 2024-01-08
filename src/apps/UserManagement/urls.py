@@ -9,9 +9,9 @@ from django.urls import path
 from .views import CreateUserView, ListUsersView, LoginView
 
 urlpatterns = [
-    path('createUser', CreateUserView.as_view(), name='create_user'),
-    path('listUsers', ListUsersView.as_view(), name='list_users'),
-    path('login', LoginView.as_view(), name='list_users'),
+    path('user', CreateUserView.as_view(), name='userOpts'),
+    path('listUsers', ListUsersView.as_view(), name='listUsers'),
+    path('login', LoginView.as_view(), name='login'),
 ]
 
 
