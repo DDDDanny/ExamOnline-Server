@@ -32,9 +32,11 @@ class User(models.Model):
     updated_at = models.DateTimeField(auto_now=True, help_text='更新时间')
     # 是否活跃
     is_active = models.BooleanField(default=True, help_text='是否激活')
+    # 是否删除
+    is_deleted = models.BooleanField(default=False, help_text='是否删除')
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['username', 'role', 'is_active']
+    REQUIRED_FIELDS = ['username', 'role', 'is_active', 'is_deleted']
 
     def __str__(self):
         return self.username

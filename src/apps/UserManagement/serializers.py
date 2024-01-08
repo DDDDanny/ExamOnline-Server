@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
         # 指定在序列化器中包含的字段
         fields = [
             'username', 'password', 'role', 'phone', 
-            'email', 'is_active', 'created_at', 'updated_at'
+            'email', 'is_active', 'created_at', 'updated_at', 'is_deleted'
         ]
         # 将 'password' 字段设置为只写，以在响应中隐藏它
         extra_kwargs = {
