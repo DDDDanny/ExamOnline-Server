@@ -4,7 +4,6 @@
 # @File    : views.py
 # @Describe: User相关视图 
 
-
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
@@ -50,6 +49,21 @@ class CreateUserView(APIView):
         else:
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败', serializer.error_messages)
+
+    # 删除用户信息
+    def delete(self, request):
+        # 获取要删除的用户实例
+        user_id = request.data.get('id')
+        try:
+            user_instance = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
+            return api_response(ResponseCode.NOT_FOUND, '用户不存在，无法删除！')
+        # 在这里添加逻辑删除的代码，例如将用户状态标记为已删除
+        user_instance.is_deleted = True
+        user_instance.save()
+        # 返回成功响应和 HTTP 200 OK 状态
+        return api_response(ResponseCode.SUCCESS, '删除成功')
 
 
 class ListUsersView(ListAPIView):
