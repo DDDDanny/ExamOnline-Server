@@ -33,10 +33,12 @@ class CreateUserView(APIView):
     # 编辑用户信息
     def put(self, request):
         # 获取要编辑的用户实例
-        user_instance = User.objects.filter(id=request.data['id']).first()
-        if user_instance is None:
-             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
-            return api_response(ResponseCode.BAD_REQUEST, '编辑失败!用户不存在，无法进行修改！')
+        user_id = request.data.get('id')
+        try:
+            user_instance = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
+            return api_response(ResponseCode.NOT_FOUND, '编辑失败!用户不存在，无法进行修改！')
         # 使用请求数据和用户实例创建 UserSerializer 的实例，传入实例表示执行更新操作
         serializer = UserSerializer(user_instance, data=request.data)
         # 检查数据是否根据序列化器的规则有效
@@ -48,7 +50,7 @@ class CreateUserView(APIView):
             return api_response(ResponseCode.SUCCESS, '编辑成功', data.data)
         else:
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
-            return api_response(ResponseCode.BAD_REQUEST, '编辑失败', serializer.error_messages)
+            return api_response(ResponseCode.BAD_REQUEST, '编辑失败! 存在校验失败的字段！', serializer.error_messages)
 
     # 删除用户信息
     def delete(self, request):
