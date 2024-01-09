@@ -4,16 +4,17 @@
 # @File    : serializers.py
 # @Describe: 用户应用-序列化 
 
-from .models import User
+from .models import Student, Teacher
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.ModelSerializer):
+# 用户基础序列化（抽象类）
+class UserBaseSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        abstract = True
         # 指定在序列化器中包含的字段
         fields = [
-            'username', 'password', 'role', 'phone', 
+            'username', 'password', 'name', 'role', 'phone', 'gender',
             'email', 'is_active', 'created_at', 'updated_at', 'is_deleted'
         ]
         # 将 'password' 字段设置为只写，以在响应中隐藏它
@@ -22,6 +23,21 @@ class UserSerializer(serializers.ModelSerializer):
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
             'updated_at': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
+
+
+# 学生序列化
+class StudentSerializer(UserBaseSerializer):
+    class Meta(UserBaseSerializer.Meta):
+        model = Student
+        UserBaseSerializer.Meta.fields.append('student_id')
+        UserBaseSerializer.Meta.fields.append('grade')
+
+
+# 教师序列化
+class TeacherSerializer(UserBaseSerializer):
+    class Meta(UserBaseSerializer.Meta):
+        model = Teacher
+        UserBaseSerializer.Meta.fields.append('teacher_id')
 
 
 if __name__ == '__main__':
