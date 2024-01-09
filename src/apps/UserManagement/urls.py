@@ -6,12 +6,12 @@
 
 from django.urls import path
 
-from .views import CreateUserView, ListUsersView, LoginView
+from .views import StudentUserView, TeacherUserView
 
 urlpatterns = [
-    path('user', CreateUserView.as_view(), name='userOpts'),
-    path('listUsers', ListUsersView.as_view(), name='listUsers'),
-    path('login', LoginView.as_view(), name='login'),
+    path('student', StudentUserView.as_view(), name='StudentOpts'),
+    path('teacher', TeacherUserView.as_view(), name='TeacherOpts'),
+    # path('login', LoginView.as_view(), name='login'),
 ]
 
 
