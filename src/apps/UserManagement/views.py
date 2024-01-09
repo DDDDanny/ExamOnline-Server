@@ -78,6 +78,8 @@ class BaseUserView(APIView):
             'username': 'username',
             'name': 'name',
             'gender': 'gender',
+            'is_deleted': 'is_deleted',
+            'is_active': 'is_active'
             # 添加其他查询参数和字段的映射
         }
         # 构建查询条件的字典
