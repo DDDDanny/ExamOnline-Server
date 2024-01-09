@@ -29,15 +29,14 @@ class UserBaseSerializer(serializers.ModelSerializer):
 class StudentSerializer(UserBaseSerializer):
     class Meta(UserBaseSerializer.Meta):
         model = Student
-        UserBaseSerializer.Meta.fields.append('student_id')
-        UserBaseSerializer.Meta.fields.append('grade')
+        fields = UserBaseSerializer.Meta.fields + ['student_id', 'grade']
 
 
 # 教师序列化
 class TeacherSerializer(UserBaseSerializer):
     class Meta(UserBaseSerializer.Meta):
         model = Teacher
-        UserBaseSerializer.Meta.fields.append('teacher_id')
+        fields = UserBaseSerializer.Meta.fields.append('teacher_id')
 
 
 if __name__ == '__main__':
