@@ -36,7 +36,7 @@ class StudentSerializer(UserBaseSerializer):
 class TeacherSerializer(UserBaseSerializer):
     class Meta(UserBaseSerializer.Meta):
         model = Teacher
-        fields = UserBaseSerializer.Meta.fields.append('teacher_id')
+        fields = UserBaseSerializer.Meta.fields + ['teacher_id']
 
 
 if __name__ == '__main__':
