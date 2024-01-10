@@ -4,6 +4,8 @@
 # @File    : request_response_logger.py
 # @Describe: 用于拦截请求，打印请求&返回数据
 
+
+from src.utils.response_utils import ResponseCode, api_response
 from src.utils.logger_utils import log_request, log_response, log_common
 
 class RequestInterceptorMiddleware:
@@ -19,7 +21,11 @@ class RequestInterceptorMiddleware:
         # 处理响应后的逻辑
         if response.status_code == 200:
             self.log_response_body(response)
-        
+        else:
+            if response.status_code in [401, 403]:
+                return api_response(ResponseCode.UNAUTHORIZED, '无权限或Token失效！请重新登录！')
+            else:
+                return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '系统错误', response.reason_phrase)
         return response
 
     # 打印请求体日志信息
