@@ -7,11 +7,12 @@
 from django.urls import path
 
 from .views import StudentUserView, TeacherUserView
+from .views import StudentLoginView 
 
 urlpatterns = [
     path('student', StudentUserView.as_view(), name='StudentOpts'),
     path('teacher', TeacherUserView.as_view(), name='TeacherOpts'),
-    # path('login', LoginView.as_view(), name='login'),
+    path('studentLogin', StudentLoginView.as_view(), name='studentLogin'),
 ]
 
 
