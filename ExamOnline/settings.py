@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework_simplejwt',
     'src.apps.UserManagement'
 ]
 
@@ -50,6 +52,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'src.middleware.request_interceptor.RequestInterceptorMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'src.middleware.authentication.CustomJWTAuthentication',
+    ],
+}
 
 ROOT_URLCONF = 'ExamOnline.urls'
 
