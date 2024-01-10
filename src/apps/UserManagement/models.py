@@ -56,7 +56,11 @@ class Student(User):
 
     def __str__(self):
         return 'Student: ' + self.username
-
+    
+    # 根据你的身份验证逻辑返回相应的布尔值
+    @property
+    def is_authenticated(self):
+        return True
 
 # 教师用户模型（实例模型）
 class Teacher(User):
