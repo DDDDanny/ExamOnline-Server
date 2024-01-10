@@ -5,16 +5,38 @@
 # @Describe: User相关视图 
 
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
-from src.utils.logger_utils import log_common
 from src.utils.response_utils import ResponseCode, api_response
 
 
+class StudentLoginView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        try:
+            user = Student.objects.get(username=username)
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
+        if user.password == password:
+            refresh = RefreshToken.for_user(user)
+            data = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            return api_response(ResponseCode.SUCCESS, '登录成功', data)
+        else:
+            return api_response(ResponseCode.UNAUTHORIZED, '登录失败！用户名或密码错误！')
+
+
 class BaseUserView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     # 需要在子类中设置具体的序列化器
     model_serializer = None 
     # 需要在子类中设置具体的Model
@@ -33,7 +55,7 @@ class BaseUserView(APIView):
         else:
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
-        
+
     # 编辑用户信息
     def put(self, request):
         # 获取要编辑的用户实例
@@ -105,16 +127,6 @@ class StudentUserView(BaseUserView):
 class TeacherUserView(BaseUserView):
     model_serializer = TeacherSerializer
     model = Teacher
-
-
-# class LoginView(APIView):
-#     # 用户登录
-#     def post(self, request):
-#         user = authenticate(request, username=request.data['username'], password=request.data['password'])
-#         if user is not None:
-#             return api_response(ResponseCode.SUCCESS, '登录成功')
-#         else:
-#             return api_response(ResponseCode.BAD_REQUEST, '登录失败！账号或密码错误！', request.data)
 
 
 if __name__ == '__main__':
