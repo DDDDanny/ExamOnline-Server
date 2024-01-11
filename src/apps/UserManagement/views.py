@@ -6,11 +6,11 @@
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
+from src.middleware.authentication import CustomRefreshToken
 from src.utils.response_utils import ResponseCode, api_response
 
 
@@ -24,7 +24,7 @@ class StudentLoginView(APIView):
         except Exception:
             return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
         if user.password == password:
-            refresh = RefreshToken.for_user(user)
+            refresh = CustomRefreshToken.for_user(user)
             data = {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
