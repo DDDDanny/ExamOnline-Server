@@ -34,6 +34,26 @@ class StudentLoginView(APIView):
             return api_response(ResponseCode.UNAUTHORIZED, '登录失败！用户名或密码错误！')
 
 
+class TeacherLoginView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        try:
+            user = Teacher.objects.get(username=username)
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
+        if user.password == password:
+            refresh = CustomRefreshToken.for_user(user)
+            data = {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+            return api_response(ResponseCode.SUCCESS, '登录成功', data)
+        else:
+            return api_response(ResponseCode.UNAUTHORIZED, '登录失败！用户名或密码错误！')
+
+
 class BaseUserView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
