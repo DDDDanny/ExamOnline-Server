@@ -75,6 +75,11 @@ class Teacher(User):
      
     def __str__(self):
         return 'Teacher: ' + self.username
+    
+    # 根据你的身份验证逻辑返回相应的布尔值
+    @property
+    def is_authenticated(self):
+        return True
 
 
 if __name__ == '__main__':
