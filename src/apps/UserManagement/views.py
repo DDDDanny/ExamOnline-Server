@@ -138,6 +138,20 @@ class BaseUserView(APIView):
         data = Response(serializer.data)
         return api_response(ResponseCode.SUCCESS, '查询成功', data.data)
 
+    # 查询用户详情
+    def get(self, _, user_id):
+        try:
+            # 获取指定用户实例
+            user_instance = self.model.objects.get(id=user_id)
+        except self.model.DoesNotExist:
+            # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
+            return api_response(ResponseCode.NOT_FOUND, '用户不存在！')
+        # 序列化用户详情数据
+        serializer = self.model_serializer(user_instance)
+        # 返回序列化后的用户详情数据
+        data = Response(serializer.data)
+        return api_response(ResponseCode.SUCCESS, '查询用户详情成功', data.data)
+
 
 class StudentUserView(BaseUserView):
     model_serializer = StudentSerializer
