@@ -113,44 +113,44 @@ class BaseUserView(APIView):
         # 返回成功响应和 HTTP 200 OK 状态
         return api_response(ResponseCode.SUCCESS, '删除成功')
 
-    # 查询用户信息
-    def get(self, request):
-        # 定义查询参数和它们对应的模型字段
-        query_params_mapping = {
-            'username': 'username',
-            'name': 'name',
-            'gender': 'gender',
-            'is_deleted': 'is_deleted',
-            'is_active': 'is_active'
-            # 添加其他查询参数和字段的映射
-        }
-        # 构建查询条件的字典
-        filters = {}
-        for param, field in query_params_mapping.items():
-            value = request.query_params.get(param, None)
-            if value is not None:
-                filters[field] = value
-        # 执行查询
-        queryset = self.model.objects.filter(**filters)
-        # 序列化用户数据
-        serializer = self.model_serializer(queryset, many=True)
-        # 返回序列化后的数据
-        data = Response(serializer.data)
-        return api_response(ResponseCode.SUCCESS, '查询成功', data.data)
-
-    # 查询用户详情
-    def get(self, _, user_id):
-        try:
-            # 获取指定用户实例
-            user_instance = self.model.objects.get(id=user_id)
-        except self.model.DoesNotExist:
-            # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
-            return api_response(ResponseCode.NOT_FOUND, '用户不存在！')
-        # 序列化用户详情数据
-        serializer = self.model_serializer(user_instance)
-        # 返回序列化后的用户详情数据
-        data = Response(serializer.data)
-        return api_response(ResponseCode.SUCCESS, '查询用户详情成功', data.data)
+    # 查询用户信息（列表 & 详情）
+    def get(self, request, **kwargs):
+        if kwargs.items().__len__() != 0:
+            try:
+                # 获取指定用户实例
+                user_instance = self.model.objects.get(id=kwargs['user_id'])
+            except self.model.DoesNotExist:
+                # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
+                return api_response(ResponseCode.NOT_FOUND, '用户不存在！')
+            # 序列化用户详情数据
+            serializer = self.model_serializer(user_instance)
+            # 返回序列化后的用户详情数据
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '查询用户详情成功', data.data)
+        else:
+            # 定义查询参数和它们对应的模型字段
+            query_params_mapping = {
+                'username': 'username',
+                'name': 'name',
+                'gender': 'gender',
+                'is_deleted': 'is_deleted',
+                'is_active': 'is_active'
+                # 添加其他查询参数和字段的映射
+            }
+            # 构建查询条件的字典
+            filters = {}
+            for param, field in query_params_mapping.items():
+                value = request.query_params.get(param, None)
+                if value is not None:
+                    filters[field] = value
+            # 执行查询
+            queryset = self.model.objects.filter(**filters)
+            # 序列化用户数据
+            serializer = self.model_serializer(queryset, many=True)
+            # 返回序列化后的数据
+            data = Response(serializer.data)
+            resp = { 'total': len(data.data), 'data': data.data }
+            return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
 class StudentUserView(BaseUserView):
