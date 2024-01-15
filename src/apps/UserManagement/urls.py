@@ -9,7 +9,7 @@ from django.urls import path
 from .views import StudentBatchActivationView
 from .views import StudentUserView, TeacherUserView
 from .views import StudentLoginView, TeacherLoginView
-from .views import StudentChangePasswordView
+from .views import StudentChangePasswordView, TeacherChangePasswordView
 
 urlpatterns = [
     path('student', StudentUserView.as_view(), name='StudentOpts'),
@@ -19,7 +19,8 @@ urlpatterns = [
     path('teacherLogin', TeacherLoginView.as_view(), name='TeacherLogin'),
     path('studentLogin', StudentLoginView.as_view(), name='StudentLogin'),
     path('studentBatchActivation', StudentBatchActivationView.as_view(), name='StudentBatchActivation'),
-    path('studentChangePassword/<str:user_id>', StudentChangePasswordView.as_view(), name='StudentChangePassword')
+    path('studentChangePassword/<str:user_id>', StudentChangePasswordView.as_view(), name='StudentChangePassword'),
+    path('teacherChangePassword/<str:user_id>', TeacherChangePasswordView.as_view(), name='TeacherChangePassword'),
 ]
 
 
