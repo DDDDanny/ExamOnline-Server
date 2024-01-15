@@ -185,6 +185,8 @@ class StudentBatchActivationView(APIView):
         
 
 class ChangePasswordBaseView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     # 需要在子类中设置具体的序列化器
     model_serializer = None 
     # 需要在子类中设置具体的Model
