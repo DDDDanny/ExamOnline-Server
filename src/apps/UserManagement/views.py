@@ -192,7 +192,7 @@ class ChangePasswordBaseView(APIView):
     def put(self, request, **kwargs):
         try:
             # 获取指定用户实例
-            user = Student.objects.get(id=kwargs['user_id'])
+            user = self.model.objects.get(id=kwargs['user_id'])
         except self.model.DoesNotExist:
             # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
             return api_response(ResponseCode.NOT_FOUND, '用户不存在！')
