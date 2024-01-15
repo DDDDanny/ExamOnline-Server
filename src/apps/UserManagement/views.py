@@ -12,6 +12,7 @@ from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
 from src.middleware.authentication import CustomRefreshToken
 from src.utils.response_utils import ResponseCode, api_response
+from src.utils.logger_utils import log_common
 
 
 class StudentLoginView(APIView):
@@ -162,6 +163,27 @@ class TeacherUserView(BaseUserView):
     model_serializer = TeacherSerializer
     model = Teacher
 
+
+class StudentBatchActivation(APIView):
+    """StudentBatchActivation
+        学生批量激活
+    """
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        ids = request.data['ids']
+        # 兜底处理
+        if len(ids) == 0:
+            return api_response(ResponseCode.SUCCESS, '无用户！无需激活！')
+        try:
+            students = Student.objects.filter(id__in=ids)
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '批量激活失败！有用户不存在，请重新操作！')
+        # 更新是否激活字段
+        students.update(is_active=True)
+        return api_response(ResponseCode.SUCCESS, '批量激活成功')
+        
 
 if __name__ == '__main__':
     pass
