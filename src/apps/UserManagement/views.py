@@ -209,7 +209,12 @@ class ChangePasswordBaseView(APIView):
 class StudentChangePasswordView(ChangePasswordBaseView):
     model_serializer = StudentSerializer
     model = Student
-    
+
+
+class TeacherChangePasswordView(ChangePasswordBaseView):
+    model_serializer = TeacherSerializer
+    model = Teacher
+
 
 if __name__ == '__main__':
     pass
