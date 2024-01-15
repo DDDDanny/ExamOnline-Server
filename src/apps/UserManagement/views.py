@@ -12,7 +12,6 @@ from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
 from src.middleware.authentication import CustomRefreshToken
 from src.utils.response_utils import ResponseCode, api_response
-from src.utils.logger_utils import log_common
 
 
 class StudentLoginView(APIView):
@@ -164,7 +163,7 @@ class TeacherUserView(BaseUserView):
     model = Teacher
 
 
-class StudentBatchActivation(APIView):
+class StudentBatchActivationView(APIView):
     """StudentBatchActivation
         学生批量激活
     """
@@ -184,6 +183,33 @@ class StudentBatchActivation(APIView):
         students.update(is_active=True)
         return api_response(ResponseCode.SUCCESS, '批量激活成功')
         
+
+class ChangePasswordBaseView(APIView):
+    # 需要在子类中设置具体的序列化器
+    model_serializer = None 
+    # 需要在子类中设置具体的Model
+    model = None
+    def put(self, request, **kwargs):
+        try:
+            # 获取指定用户实例
+            user = Student.objects.get(id=kwargs['user_id'])
+        except self.model.DoesNotExist:
+            # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
+            return api_response(ResponseCode.NOT_FOUND, '用户不存在！')
+        # 序列化用户详情数据
+        if user.password != request.data['old_password']:
+            # 原密码错误
+            return api_response(ResponseCode.BAD_REQUEST, '原密码错误！请重试！')
+        else:
+            user.password = request.data['new_password']
+            user.save()
+        return api_response(ResponseCode.SUCCESS, '修改密码成功')
+
+
+class StudentChangePasswordView(ChangePasswordBaseView):
+    model_serializer = StudentSerializer
+    model = Student
+    
 
 if __name__ == '__main__':
     pass
