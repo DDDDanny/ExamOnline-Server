@@ -62,6 +62,7 @@ class Student(User):
     def is_authenticated(self):
         return True
 
+
 # 教师用户模型（实例模型）
 class Teacher(User):
     class Meta:
