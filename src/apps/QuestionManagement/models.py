@@ -22,6 +22,9 @@ class Questions(models.Model):
     # 试题类型
     TYPE_CHOICES = [('select', 'Select'),('judge', 'Judge')]
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='select', help_text='试题类型')
+    # 试库类型
+    BANK_TYPE_CHOICES = [('public', 'Public'),('private', 'Private')]
+    question_bank_type = models.CharField(max_length=10, choices=BANK_TYPE_CHOICES, default='select', help_text='所属题库类型')
     # 试题状态
     status = models.BooleanField(default=True, help_text='试题状态')
     # 创建人
