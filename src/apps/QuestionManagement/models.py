@@ -27,6 +27,8 @@ class Questions(models.Model):
     trial_type = models.CharField(max_length=10, choices=TRIAL_TYPE_CHOICES, default='select', help_text='所属题库类型')
     # 试题状态
     status = models.BooleanField(default=True, help_text='试题状态')
+    # 试题是否被删除
+    is_deleted = models.BooleanField(default=False, help_text='是否删除')
     # 创建人
     created_user = models.CharField(max_length=255, help_text='创建人')
     # 创建时间
