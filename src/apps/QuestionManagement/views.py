@@ -5,6 +5,7 @@
 # @Describe: Question相关视图
 
 from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Questions
@@ -16,7 +17,13 @@ class QuestionBaseView(APIView):
     
     # 创建试题信息
     def post(self, request):
-        pass
+        serializer = QuestionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+        else:
+            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)      
     
     # 修改试题信息
     def put(self, request):
