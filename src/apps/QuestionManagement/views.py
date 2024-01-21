@@ -14,7 +14,8 @@ from src.utils.response_utils import ResponseCode, api_response
 
 
 class QuestionBaseView(APIView):
-    
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     # 创建试题信息
     def post(self, request):
         serializer = QuestionSerializer(data=request.data)
