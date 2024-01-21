@@ -11,6 +11,7 @@ from .views import QuestionBaseView
 
 urlpatterns = [
     path('question', QuestionBaseView.as_view(), name='QuestionsOpts'),
+    path('question/<str:id>', QuestionBaseView.as_view(), name='QuestionsOpts'),
 ]
 
 
