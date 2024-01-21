@@ -58,17 +58,41 @@ class QuestionBaseView(APIView):
 
     # 获取试题信息
     def get(self, request, **kwargs):
-        try:
-            # 获取指定试题实例
-            question_instance = Questions.objects.get(id=kwargs['id'])
-        except Questions.DoesNotExist:
-            # 试题不存在，返回错误响应和 HTTP 404 Not Found 状态
-            return api_response(ResponseCode.NOT_FOUND, '试题不存在！')
-        # 序列化试题详情数据
-        serializer = QuestionSerializer(question_instance)
-        # 返回序列化后的试题详情数据
-        data = Response(serializer.data)
-        return api_response(ResponseCode.SUCCESS, '查询试题详情成功', data.data)
+        if len(kwargs.items()) != 0:
+            try:
+                # 获取指定试题实例
+                question_instance = Questions.objects.get(id=kwargs['id'])
+            except Questions.DoesNotExist:
+                # 试题不存在，返回错误响应和 HTTP 404 Not Found 状态
+                return api_response(ResponseCode.NOT_FOUND, '试题不存在！')
+            # 序列化试题详情数据
+            serializer = QuestionSerializer(question_instance)
+            # 返回序列化后的试题详情数据
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '查询试题详情成功', data.data)
+        else:
+            # 定义查询参数和它们对应的模型字段
+            query_params_mapping = {
+                'topic': 'topic',
+                'type': 'type',
+                'is_deleted': 'is_deleted',
+                'status': 'status'
+                # 添加其他查询参数和字段的映射
+            }
+            # 构建查询条件的字典
+            filters = {}
+            for param, field in query_params_mapping.items():
+                value = request.query_params.get(param, None)
+                if value is not None:
+                    filters[field] = value
+            # 执行查询
+            queryset = Questions.objects.filter(**filters)
+            # 序列化试题数据
+            serializer = QuestionSerializer(queryset, many=True)
+            # 返回序列化后的数据
+            data = Response(serializer.data)
+            resp = { 'total': len(data.data), 'data': data.data }
+            return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
 if __name__ == '__main__':
