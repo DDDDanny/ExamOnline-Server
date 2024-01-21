@@ -57,8 +57,18 @@ class QuestionBaseView(APIView):
         return api_response(ResponseCode.SUCCESS, '删除成功')
 
     # 获取试题信息
-    def get(self, request, *args, **kwargs):
-        pass
+    def get(self, request, **kwargs):
+        try:
+            # 获取指定试题实例
+            question_instance = Questions.objects.get(id=kwargs['id'])
+        except Questions.DoesNotExist:
+            # 试题不存在，返回错误响应和 HTTP 404 Not Found 状态
+            return api_response(ResponseCode.NOT_FOUND, '试题不存在！')
+        # 序列化试题详情数据
+        serializer = QuestionSerializer(question_instance)
+        # 返回序列化后的试题详情数据
+        data = Response(serializer.data)
+        return api_response(ResponseCode.SUCCESS, '查询试题详情成功', data.data)
 
 
 if __name__ == '__main__':
