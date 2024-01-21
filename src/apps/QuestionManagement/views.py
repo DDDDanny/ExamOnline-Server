@@ -46,7 +46,15 @@ class QuestionBaseView(APIView):
     
     # 删除试题信息
     def delete(self, _, **kwargs):
-        pass
+        try:
+            # 获取需要编辑的试题实例
+            question_instance = Questions.objects.get(id=kwargs['id'])
+        except Questions.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '删除失败!试题不存在，无法进行删除！') 
+        question_instance.is_deleted = True
+        question_instance.save()
+        # 返回成功响应和 HTTP 200 OK 状态
+        return api_response(ResponseCode.SUCCESS, '删除成功')
 
     # 获取试题信息
     def get(self, request, *args, **kwargs):
