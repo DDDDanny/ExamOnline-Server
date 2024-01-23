@@ -7,11 +7,13 @@
 from django.urls import path
 
 from .views import QuestionBaseView
+from .views import QuestionFavoriteView
 
 
 urlpatterns = [
     path('question', QuestionBaseView.as_view(), name='QuestionsOpts'),
     path('question/<str:id>', QuestionBaseView.as_view(), name='QuestionsOpts'),
+    path('q_favorite', QuestionFavoriteView.as_view(), name='QuestionsFavoriteOpts'),
 ]
 
 
