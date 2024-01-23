@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Questions
-from .serializers import QuestionSerializer
+from .serializers import QuestionSerializer, QuestionFavoriteSerializer
 from src.utils.response_utils import ResponseCode, api_response
 
 
@@ -96,5 +96,19 @@ class QuestionBaseView(APIView):
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
+class QuestionFavoriteView(APIView):
+    
+    def post(self, request):
+        is_favorite = request.data['is_favorite']
+        if is_favorite is True:
+            serializer = QuestionFavoriteSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                data = Response(serializer.data)
+                return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+            else:
+                return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+    
+    
 if __name__ == '__main__':
     pass
