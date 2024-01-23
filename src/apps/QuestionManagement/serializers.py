@@ -6,7 +6,7 @@
 
 from rest_framework import serializers
 
-from .models import Questions
+from .models import Questions, QuestionsFavorite
 from src.apps.UserManagement.models import Teacher
 
 
@@ -51,6 +51,17 @@ class QuestionSerializer(serializers.ModelSerializer):
             }
         else:
             return None
+
+
+class QuestionFavoriteSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = QuestionsFavorite
+        fields = '__all__'
+        # 将 'password' 字段设置为只写，以在响应中隐藏它
+        extra_kwargs = {
+            'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+        }
 
 
 if __name__ == '__main__':
