@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Questions
+from .models import Questions, QuestionsFavorite
 from .serializers import QuestionSerializer, QuestionFavoriteSerializer
 from src.utils.response_utils import ResponseCode, api_response
 
@@ -99,15 +99,21 @@ class QuestionBaseView(APIView):
 class QuestionFavoriteView(APIView):
     
     def post(self, request):
-        is_favorite = request.data['is_favorite']
-        if is_favorite is True:
+        # 获取收藏信息数量
+        favorite_count = QuestionsFavorite.objects.filter(
+            collector=request.data['collector'], 
+            question_id=request.data['question_id']
+        ).count()
+        if favorite_count > 0:
+            return api_response(ResponseCode.SUCCESS, '收藏失败！已有收藏记录，无需再次收藏！')
+        else:
             serializer = QuestionFavoriteSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 data = Response(serializer.data)
-                return api_response(ResponseCode.SUCCESS, '收藏成功', data.data)
+                return api_response(ResponseCode.SUCCESS, '收藏成功！', data.data)
             else:
-                return api_response(ResponseCode.BAD_REQUEST, '收藏失败', serializer.errors)
+                return api_response(ResponseCode.BAD_REQUEST, '收藏失败！', serializer.errors)
     
     
 if __name__ == '__main__':
