@@ -17,6 +17,10 @@ from src.utils.response_utils import ResponseCode, api_response
 class StudentLoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
+        """post 学生登录接口
+        Args:
+            request (Object): 请求参数
+        """
         username = request.data.get('username')
         password = request.data.get('password')
         try:
@@ -37,6 +41,10 @@ class StudentLoginView(APIView):
 class TeacherLoginView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
+        """post 教师登录接口
+        Args:
+            request (Object): 请求参数
+        """
         username = request.data.get('username')
         password = request.data.get('password')
         try:
@@ -61,8 +69,12 @@ class BaseUserView(APIView):
     model_serializer = None 
     # 需要在子类中设置具体的Model
     model = None
-    # 创建用户信息
+
     def post(self, request):
+        """post 创建用户信息接口
+        Args:
+            request (Object): 请求参数
+        """
         # 使用请求数据创建实例
         serializer = self.model_serializer(data=request.data)
         # 检查数据是否根据序列化器的规则有效
@@ -76,8 +88,11 @@ class BaseUserView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
-    # 编辑用户信息
     def put(self, request):
+        """put 编辑用户信息接口
+        Args:
+            request (Object): 请求参数
+        """
         # 获取要编辑的用户实例
         user_id = request.data.get('id')
         try:
@@ -98,8 +113,11 @@ class BaseUserView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败! 存在校验失败的字段！', serializer.error_messages)
 
-    # 删除用户信息
     def delete(self, request):
+        """delete 删除用户信息接口
+        Args:
+            request (Object): 请求参数
+        """
         # 获取要删除的用户实例
         user_id = request.data.get('id')
         try:
@@ -113,8 +131,11 @@ class BaseUserView(APIView):
         # 返回成功响应和 HTTP 200 OK 状态
         return api_response(ResponseCode.SUCCESS, '删除成功')
 
-    # 查询用户信息（列表 & 详情）
     def get(self, request, **kwargs):
+        """get 查询用户信息（列表 & 详情）
+        Args:
+            request (Object): 请求参数
+        """
         if kwargs.items().__len__() != 0:
             try:
                 # 获取指定用户实例
@@ -192,6 +213,10 @@ class ChangePasswordBaseView(APIView):
     # 需要在子类中设置具体的Model
     model = None
     def put(self, request, **kwargs):
+        """put 修改用户密码接口
+        Args:
+            request (Object): 请求参数
+        """
         try:
             # 获取指定用户实例
             user = self.model.objects.get(id=kwargs['user_id'])
