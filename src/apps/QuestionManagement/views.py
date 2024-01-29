@@ -16,8 +16,12 @@ from src.utils.response_utils import ResponseCode, api_response
 class QuestionBaseView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    # 创建试题信息
+
     def post(self, request):
+        """post 创建试题信息
+        Args:
+            request (Object): 请求参数
+        """
         serializer = QuestionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -26,8 +30,11 @@ class QuestionBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)      
     
-    # 修改试题信息
     def put(self, request, **kwargs):
+        """put 修改试题信息
+        Args:
+            request (Object): 请求参数
+        """
         try:
             # 获取需要编辑的试题实例
             question_instance = Questions.objects.get(id=kwargs['id'])
@@ -47,6 +54,10 @@ class QuestionBaseView(APIView):
     
     # 删除试题信息
     def delete(self, _, **kwargs):
+        """delete 删除试题信息
+        Args:
+            _ (any): 缺省参数
+        """
         try:
             # 获取需要编辑的试题实例
             question_instance = Questions.objects.get(id=kwargs['id'])
@@ -57,8 +68,11 @@ class QuestionBaseView(APIView):
         # 返回成功响应和 HTTP 200 OK 状态
         return api_response(ResponseCode.SUCCESS, '删除成功')
 
-    # 获取试题信息
     def get(self, request, **kwargs):
+        """get 获取试题信息
+        Args:
+            request (Object): 请求参数
+        """
         if len(kwargs.items()) != 0:
             try:
                 # 获取指定试题实例
