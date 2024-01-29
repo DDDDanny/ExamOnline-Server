@@ -98,12 +98,21 @@ class QuestionBaseView(APIView):
 
 class QuestionFavoriteView(APIView):
     
+    def __get_favorite_count(self, user_id, q_id):
+        """__get_favorite_count 获取收藏信息数量
+        Args:
+            user_id (UUID): 收藏者ID
+            q_id (UUID): 试题ID
+        """
+        return QuestionsFavorite.objects.filter(collector=user_id, question_id=q_id).count()
+    
     def post(self, request):
+        """post 收藏试题接口
+        Args:
+            request (Object): 请求参数
+        """
         # 获取收藏信息数量
-        favorite_count = QuestionsFavorite.objects.filter(
-            collector=request.data['collector'], 
-            question_id=request.data['question_id']
-        ).count()
+        favorite_count = self.__get_favorite_count(request.data['collector'], request.data['question_id'])
         if favorite_count > 0:
             return api_response(ResponseCode.SUCCESS, '收藏失败！已有收藏记录，无需再次收藏！')
         else:
@@ -114,7 +123,27 @@ class QuestionFavoriteView(APIView):
                 return api_response(ResponseCode.SUCCESS, '收藏成功！', data.data)
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '收藏失败！', serializer.errors)
-    
+            
+    def delete(self, request):
+        """delete 取消收藏试题接口
+        Args:
+            request (Object): 请求参数
+        """
+        # 获取收藏信息数量
+        favorite_count = self.__get_favorite_count(request.data['collector'], request.data['question_id'])
+        if favorite_count <= 0:
+            return api_response(ResponseCode.SUCCESS, '取消收藏失败！没有收藏记录，无需取消收藏！')
+        else:
+            # 查询收藏记录
+            favorite_entry = QuestionsFavorite.objects.filter(
+                collector=request.data['collector'], question_id=request.data['question_id'])
+            if favorite_entry:
+                # 如果存在收藏记录，删除它
+                favorite_entry.delete()
+                return api_response(ResponseCode.SUCCESS, '取消收藏成功！')
+            else:
+                return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
+        
     
 if __name__ == '__main__':
     pass
