@@ -54,11 +54,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuestionFavoriteSerializer(serializers.ModelSerializer):
-    
     class Meta:
         model = QuestionsFavorite
         fields = '__all__'
-        # 将 'password' 字段设置为只写，以在响应中隐藏它
+        # 一些额外的属性
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
         }

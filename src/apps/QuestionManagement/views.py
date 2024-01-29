@@ -105,9 +105,9 @@ class QuestionFavoriteView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 data = Response(serializer.data)
-                return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+                return api_response(ResponseCode.SUCCESS, '收藏成功', data.data)
             else:
-                return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+                return api_response(ResponseCode.BAD_REQUEST, '收藏失败', serializer.errors)
     
     
 if __name__ == '__main__':
