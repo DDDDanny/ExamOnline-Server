@@ -111,6 +111,8 @@ class QuestionBaseView(APIView):
 
 
 class QuestionFavoriteView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     
     def __get_favorite_count(self, user_id, q_id):
         """__get_favorite_count 获取收藏信息数量
