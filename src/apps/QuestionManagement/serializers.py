@@ -33,7 +33,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             return {
                 'id': teacher_instance.id,
                 'name': teacher_instance.name, 
-                'username': teacher_instance.name,
+                'username': teacher_instance.username,
                 # 可以再加需要的数据
             }
         else:
@@ -46,7 +46,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             return {
                 'id': teacher_instance.id,
                 'name': teacher_instance.name, 
-                'username': teacher_instance.name,
+                'username': teacher_instance.username,
                 # 可以再加需要的数据
             }
         else:
