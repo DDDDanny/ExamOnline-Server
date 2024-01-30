@@ -111,7 +111,7 @@ class QuestionBaseView(APIView):
 
 class QuestionFavoriteView(APIView):
     # JWT校验
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def __get_favorite_count(self, user_id, q_id):
         """__get_favorite_count 获取收藏信息数量
@@ -160,6 +160,11 @@ class QuestionFavoriteView(APIView):
                 return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
     
     def get(self, _, **kwargs):
+        """get 根据收藏者ID获取收藏的试题列表
+        Args:
+            _ (any): 缺省参数
+            id (str): 收藏者ID
+        """
         queryset = QuestionsFavorite.objects.filter(collector=kwargs['id'])
         # 序列化试题数据
         serializer = QuestionFavoriteSerializer(queryset, many=True)
