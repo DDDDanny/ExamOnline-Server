@@ -51,8 +51,7 @@ class QuestionBaseView(APIView):
         else:
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败! 存在校验失败的字段！', serializer.error_messages)
-    
-    # 删除试题信息
+
     def delete(self, _, **kwargs):
         """delete 删除试题信息
         Args:
@@ -112,7 +111,7 @@ class QuestionBaseView(APIView):
 
 class QuestionFavoriteView(APIView):
     # JWT校验
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
     def __get_favorite_count(self, user_id, q_id):
         """__get_favorite_count 获取收藏信息数量
@@ -159,7 +158,16 @@ class QuestionFavoriteView(APIView):
                 return api_response(ResponseCode.SUCCESS, '取消收藏成功！')
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
-        
     
+    def get(self, _, **kwargs):
+        queryset = QuestionsFavorite.objects.filter(collector=kwargs['id'])
+        # 序列化试题数据
+        serializer = QuestionFavoriteSerializer(queryset, many=True)
+        # 返回序列化后的数据
+        data = Response(serializer.data)
+        resp = { 'total': len(data.data), 'data': data.data }
+        return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
 if __name__ == '__main__':
     pass
