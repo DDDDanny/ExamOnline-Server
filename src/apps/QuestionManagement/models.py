@@ -52,5 +52,23 @@ class QuestionsFavorite(models.Model):
     created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
 
 
+class ErrorArchive(models.Model):
+    class Meta:
+        db_table = 'error_archive'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # 错误试题ID
+    question_id = models.CharField(max_length=50, help_text='试题ID')
+    # 错题解析
+    explanation = models.TextField(max_length=500, help_text='错题解析')
+    # 错题难度
+    DIFFICULTY_CHOICES = (('E', 'Easy'), ('M', 'Medium'), ('H', 'Hard'))
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='select', help_text='错题难度')
+    # 收藏者ID
+    collector = models.CharField(max_length=50, help_text='收藏者ID')
+    # 创建时间
+    created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
+
+
 if __name__ == '__main__':
     pass
