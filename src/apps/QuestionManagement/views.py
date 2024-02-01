@@ -8,8 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Questions, QuestionsFavorite
+from .models import Questions, QuestionsFavorite, ErrorArchive
 from .serializers import QuestionSerializer, QuestionFavoriteSerializer
+from .serializers import ErrorArchiveSerializer
 from src.utils.response_utils import ResponseCode, api_response
 
 
@@ -172,6 +173,37 @@ class QuestionFavoriteView(APIView):
         data = Response(serializer.data)
         resp = { 'total': len(data.data), 'data': data.data }
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
+class ErrorArchiveView(APIView):
+    
+    def __get_error_question_count(self, user_id, q_id):
+        """__get_error_question_count 获取收藏错题数量
+        Args:
+            user_id (UUID): 收藏者ID
+            q_id (UUID): 试题ID
+        Returns:
+            number: 错题数量
+        """
+        return ErrorArchive.objects.filter(collector=user_id, question_id=q_id).count()
+    
+    def post(self, request):
+        """post 错题收藏接口
+        Args:
+            request (object): 请求参数
+        """
+        # 获取收藏错题信息数量
+        archive_count = self.__get_error_question_count(request.data['collector'], request.data['question_id'])
+        if archive_count > 0:
+            return api_response(ResponseCode.SUCCESS, '加入错题集失败！已有错题记录，无需再次收藏！')
+        else:
+            serializer = ErrorArchiveSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                data = Response(serializer.data)
+                return api_response(ResponseCode.SUCCESS, '收藏错题成功！', data.data)
+            else:
+                return api_response(ResponseCode.BAD_REQUEST, '收藏错题失败！', serializer.errors)
 
 
 if __name__ == '__main__':
