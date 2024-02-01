@@ -6,7 +6,7 @@
 
 from rest_framework import serializers
 
-from .models import Questions, QuestionsFavorite
+from .models import Questions, QuestionsFavorite, ErrorArchive
 from src.apps.UserManagement.models import Teacher
 
 
@@ -93,6 +93,16 @@ class QuestionFavoriteSerializer(serializers.ModelSerializer):
             }
         else:
             return None
+
+
+class ErrorArchiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ErrorArchive
+        fields = '__all__'
+        # 一些额外的属性
+        extra_kwargs = {
+            'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+        }
 
 
 if __name__ == '__main__':
