@@ -205,6 +205,26 @@ class ErrorArchiveView(APIView):
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '收藏错题失败！', serializer.errors)
 
+    def delete(self, request):
+        """delete 取消收藏错题接口
+        Args:
+            request (Object): 请求参数
+        """
+        # 获取收藏错题信息数量
+        archive_count = self.__get_error_question_count(request.data['collector'], request.data['question_id'])
+        if archive_count <= 0:
+            return api_response(ResponseCode.SUCCESS, '取消收藏错题失败！没有收藏记录，无需取消收藏！')
+        else:
+             # 查询收藏记录
+            archive_entry = ErrorArchive.objects.filter(
+                collector=request.data['collector'], question_id=request.data['question_id'])
+            if archive_entry:
+                # 如果存在收藏记录，删除它
+                archive_entry.delete()
+                return api_response(ResponseCode.SUCCESS, '取消收藏错题成功！')
+            else:
+                return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
 
+    
 if __name__ == '__main__':
     pass
