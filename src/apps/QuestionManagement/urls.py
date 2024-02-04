@@ -17,6 +17,7 @@ urlpatterns = [
     path('qFavorite', QuestionFavoriteView.as_view(), name='QuestionsFavoriteOpts'),
     path('qFavorite/<str:id>', QuestionFavoriteView.as_view(), name='QuestionsFavoriteOpts'),
     path('errorArchive', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
+    path('errorArchive/<str:id>', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
 ]
 
 
