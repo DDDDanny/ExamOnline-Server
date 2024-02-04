@@ -225,6 +225,20 @@ class ErrorArchiveView(APIView):
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
 
-    
+    def get(self, _, **kwargs):
+        """get 根据收藏者ID获取错题集的试题列表
+        Args:
+            _ (any): 缺省参数
+            id (str): 收藏者ID
+        """
+        queryset = ErrorArchive.objects.filter(collector=kwargs['id'])
+        # 序列化试题数据
+        serializer = ErrorArchiveSerializer(queryset, many=True)
+        # 返回序列化后的数据
+        data = Response(serializer.data)
+        resp = { 'total': len(data.data), 'data': data.data }
+        return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
 if __name__ == '__main__':
     pass
