@@ -2,3 +2,5 @@ django==4.2.8
 djangorestframework==3.14.0
 mysqlclient==2.1.0
 djangorestframework_simplejwt==5.3.1
+# vscode需要下面这个
+importlib-metadata
