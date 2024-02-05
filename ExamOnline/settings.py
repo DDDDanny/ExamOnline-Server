@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'src.apps.UserManagement',
-    'src.apps.QuestionManagement'
+    'src.apps.QuestionManagement',
+    'src.apps.PaperManagement',
 ]
 
 MIDDLEWARE = [
