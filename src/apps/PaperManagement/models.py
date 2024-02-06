@@ -37,5 +37,24 @@ class Paper(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, help_text='更新时间')
 
 
+class PaperQuestions(models.Model):
+    class Meta:
+        db_table = 'paper_questions'
+        
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # 试卷名称
+    paper_id = models.CharField(max_length=50, help_text='试卷ID')
+    # 试题ID
+    question_id = models.CharField(max_length=50, help_text='试题ID')
+    # 试题顺序
+    sequence_number = models.PositiveIntegerField(default=1, help_text='试题顺序')
+    # 总分数
+    marks = models.PositiveIntegerField(default=5, help_text='分数')
+    # 所属模块
+    module = models.CharField(max_length=255, help_text='所属模块')
+    # 创建时间
+    created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
+
+
 if __name__ == '__main__':
     pass
