@@ -22,7 +22,7 @@ class Paper(models.Model):
     # 答题建议时长
     duration_minutes = models.PositiveIntegerField(default=60, help_text='答题建议时长')
     # 总分数
-    total_marks = models.PositiveIntegerField(default=100, help_text='总分数')
+    total_marks = models.PositiveIntegerField(default=0, help_text='总分数')
     # 是否发布
     is_published = models.BooleanField(default=False, help_text='是否发布')
     # 发布时间
