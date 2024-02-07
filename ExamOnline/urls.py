@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include("src.apps.UserManagement.urls")),
     path("", include("src.apps.QuestionManagement.urls")),
+    path("", include("src.apps.PaperManagement.urls")),
 ]
