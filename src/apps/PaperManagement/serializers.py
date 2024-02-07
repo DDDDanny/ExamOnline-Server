@@ -9,7 +9,7 @@ from rest_framework import serializers
 from .models import Paper, PaperModule, PaperQuestions
 
 
-class PaperSerializer(serializers.Serializer):
+class PaperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paper
         # 指定在序列号中包含的字段
@@ -23,7 +23,7 @@ class PaperSerializer(serializers.Serializer):
         }
 
 
-class PaperModuleSerializer(serializers.Serializer):
+class PaperModuleSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaperModule
         # 指定在序列号中包含的字段
@@ -37,7 +37,7 @@ class PaperModuleSerializer(serializers.Serializer):
         }
 
 
-class PaperQuestionsSerializer(serializers.Serializer):
+class PaperQuestionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaperQuestions
         # 指定在序列号中包含的字段
