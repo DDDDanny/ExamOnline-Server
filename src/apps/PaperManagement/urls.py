@@ -8,9 +8,11 @@ from django.urls import path
 
 from .views import PaperBaseView
 from .views import PaperModuleView
+from .views import PaperQuetionsView
 
 
 urlpatterns = [
     path('paper', PaperBaseView.as_view(), name='PaperOpts'),
-    path('paperModule', PaperModuleView.as_view(), name='PaperModuleOpts')
+    path('paperModule', PaperModuleView.as_view(), name='PaperModuleOpts'),
+    path('paperQuestion', PaperQuetionsView.as_view(), name='PaperQuestionOpts')
 ]
