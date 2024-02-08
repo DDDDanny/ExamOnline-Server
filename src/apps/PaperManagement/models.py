@@ -48,8 +48,8 @@ class PaperQuestions(models.Model):
     question_id = models.CharField(max_length=50, help_text='试题ID')
     # 试题顺序
     sequence_number = models.PositiveIntegerField(default=1, help_text='试题顺序')
-    # 总分数
-    marks = models.PositiveIntegerField(default=5, help_text='分数')
+    # 试题分数
+    marks = models.PositiveIntegerField(default=5, help_text='试题分数')
     # 所属模块
     module = models.CharField(max_length=255, help_text='所属模块')
     # 创建时间
