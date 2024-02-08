@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Paper
-from .serializers import PaperSerializer
+from .serializers import PaperSerializer, PaperModuleSerializer
 from src.utils.response_utils import ResponseCode, api_response
 
 
@@ -21,6 +21,22 @@ class PaperBaseView(APIView):
             request (Object): 请求参数
         """
         serializer = PaperSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+        else:
+            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+
+
+class PaperModuleView(APIView):
+    
+    def post(self, request):
+        """post 创建试卷-模块信息
+        Args:
+            request (Object): 请求参数
+        """
+        serializer = PaperModuleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             data = Response(serializer.data)
