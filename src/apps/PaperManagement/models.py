@@ -27,6 +27,8 @@ class Paper(models.Model):
     is_published = models.BooleanField(default=False, help_text='是否发布')
     # 发布时间
     publish_date = models.DateTimeField(null=True, blank=True, verbose_name='发布时间')
+    # 是否删除
+    is_deleted = models.BooleanField(default=False, help_text='是否删除')
     # 创建人
     created_user = models.CharField(max_length=255, help_text='创建人')
     # 创建时间
