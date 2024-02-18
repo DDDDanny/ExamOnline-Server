@@ -29,6 +29,19 @@ class PaperBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
+    def delete(self, request):
+        # 获取要删除的试卷
+        paper_id = request.data.get('id')
+        try:
+            paper_instance = Paper.objects.get(id=paper_id)
+        except Paper.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '试卷不存在，删除失败！')
+        # 在这里添加逻辑删除的代码
+        paper_instance.is_deleted = True
+        paper_instance.save()
+        # 返回成功响应
+        return api_response(ResponseCode.SUCCESS, '删除成功！')
+
 
 class PaperModuleView(APIView):
     
