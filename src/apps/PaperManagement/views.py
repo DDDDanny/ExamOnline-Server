@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Paper
+from .models import Paper, PaperModule, PaperQuestions
 from .serializers import PaperQuestionsSerializer
 from .serializers import PaperSerializer, PaperModuleSerializer
 from src.utils.response_utils import ResponseCode, api_response
@@ -30,6 +30,10 @@ class PaperBaseView(APIView):
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
     def delete(self, request):
+        """delete 删除试卷信息（逻辑删除）
+        Args:
+            request (Object): 请求参数
+        """
         # 获取要删除的试卷
         paper_id = request.data.get('id')
         try:
@@ -57,6 +61,26 @@ class PaperModuleView(APIView):
             return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+
+    def delete(self, request):
+        """delete 删除试卷-模块信息（物理删除）
+        Args:
+            request (Object): 模块ID和试卷ID
+        """
+        # 模块ID
+        module_id = request.data.get('id')
+        # 试卷ID
+        paper_id = request.data.get('paper_id')
+        try:
+            module_instance = PaperModule.objects.get(id=module_id)
+        except PaperModule.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '模块不存在，删除失败')
+        paper_questions = PaperQuestions.objects.filter(paper_id=paper_id, module=module_id)
+        if len(paper_questions) > 0:
+            return api_response(ResponseCode.BAD_REQUEST, '该模块存在绑定的试题，无法删除！')
+        else:
+            module_instance.delete()
+            return api_response(ResponseCode.SUCCESS, '删除模块成功！')
 
 
 class PaperQuetionsView(APIView):
