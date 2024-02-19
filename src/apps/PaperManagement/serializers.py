@@ -56,18 +56,29 @@ class PaperSerializer(serializers.ModelSerializer, UserInfoMixin):
         return self.get_user_info(obj.updated_user)
 
 
-class PaperModuleSerializer(serializers.ModelSerializer):
+class PaperModuleSerializer(serializers.ModelSerializer, UserInfoMixin):
+    created_user_info = serializers.SerializerMethodField()
+    updated_user_info = serializers.SerializerMethodField()
+
     class Meta:
         model = PaperModule
         # 指定在序列号中包含的字段
         fields = '__all__'
         # 添加额外的字段
-        # extra_field = ['created_user_info', 'updated_user_info']
+        extra_field = ['created_user_info', 'updated_user_info']
         # 格式化日期时间
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
             'updated_at': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
+        
+    # 获取创建人信息
+    def get_created_user_info(self, obj):
+        return self.get_user_info(obj.created_user)
+    
+    # 获取更新人信息
+    def get_updated_user_info(self, obj):
+        return self.get_user_info(obj.updated_user)
 
 
 class PaperQuestionsSerializer(serializers.ModelSerializer):
