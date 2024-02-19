@@ -7,6 +7,7 @@
 from rest_framework import serializers
 
 from src.apps.UserManagement.models import Teacher
+from src.apps.QuestionManagement.models import Questions
 from .models import Paper, PaperModule, PaperQuestions
 
 # 创建一个公共的 Serializer Mixin
@@ -82,16 +83,38 @@ class PaperModuleSerializer(serializers.ModelSerializer, UserInfoMixin):
 
 
 class PaperQuestionsSerializer(serializers.ModelSerializer):
+    question_detail = serializers.SerializerMethodField()
+
     class Meta:
         model = PaperQuestions
         # 指定在序列号中包含的字段
         fields = '__all__'
         # 添加额外的字段
-        # extra_field = ['created_user_info', 'updated_user_info']
+        extra_field = ['question_detail']
         # 格式化日期时间
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
+
+    def get_question_detail(self, obj):
+        """get_question_detail 
+        根据给定的试题ID查询数据库获取试题信息，并返回包含试题信息的字典。
+        Args:
+            user_id (str): 试题的ID
+        Returns:
+            如果找到试题，则返回包含试题信息的字典，否则返回None。
+        """
+        question_instance = Questions.objects.filter(id=obj.question_id).first()
+        if question_instance:
+            return {
+                'id': question_instance.id,
+                'topic': question_instance.topic, 
+                'answer': question_instance.answer,
+                'type': question_instance.type,
+                # 可以再加需要的数据
+            }
+        else:
+            return None
 
 
 if __name__ == '__main__':
