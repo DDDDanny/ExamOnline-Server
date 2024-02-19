@@ -156,6 +156,23 @@ class PaperModuleView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败！存在校验失败的字段', serializer.error_messages)
 
+    def get(self, _, **kwargs):
+        """get 根据试卷ID获取模块信息
+        Args:
+            _ (——): 缺省参数
+            id：试卷ID
+        Returns:
+            list: 模块信息列表
+        """
+        # 获取需要编辑的试卷-模块实例（进行排序）
+        paper_module_instance = PaperModule.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
+        if len(paper_module_instance) == 0:
+            return api_response(ResponseCode.NOT_FOUND, '没有找到该试卷关联的模块信息！')
+        else:
+            serializer = PaperModuleSerializer(paper_module_instance, many=True)
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '获取试卷模块详情成功', data.data)
+
 
 class PaperQuetionsView(APIView):
     
