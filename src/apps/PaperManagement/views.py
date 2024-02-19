@@ -239,6 +239,23 @@ class PaperQuetionsView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败！存在校验失败的字段', serializer.error_messages)
 
+    def get(self, _, **kwargs):
+        """get 根据试卷ID获取关联信息
+        Args:
+            _ (——): 缺省参数
+            id：试卷ID
+        Returns:
+            list: 试题信息列表
+        """
+        # 获取需要编辑的试卷-试题实例（进行排序）
+        paper_question_instance = PaperQuestions.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
+        if len(paper_question_instance) == 0:
+            return api_response(ResponseCode.NOT_FOUND, '没有找到该试卷关联的试题信息！')
+        else:
+            serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
+
 
 if __name__ == '__main__':
     pass
