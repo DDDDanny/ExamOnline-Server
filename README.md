@@ -106,3 +106,21 @@ docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
 
 ---
     PS：内容暂定，待完善。。。
+
+#### 关于 Django ORM 的一些知识
+
+##### 模糊查询操作符
+
+1. `__icontains`: 包含某个字符串（不区分大小写）的值。
+2. `__contains`: 包含某个字符串（区分大小写）的值。
+3. `__iexact`: 等于某个字符串（不区分大小写）的值。
+4. `__exact`: 等于某个字符串（区分大小写）的值。
+5. `__startswith`: 以某个字符串开头的值。
+6. `__endswith`: 以某个字符串结尾的值。
+
+例子：
+
+```python
+queryset = Paper.objects.filter(title__icontains='大三')
+```
+
