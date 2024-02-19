@@ -115,7 +115,7 @@ class PaperModuleView(APIView):
             # 获取需要编辑的试卷-模块实例
             paper_module_instance = PaperModule.objects.get(id=kwargs['id'])
         except PaperModule.DoesNotExist:
-            return api_response(ResponseCode.NOT_FOUND, '编辑失败！试卷不存在，无法进行编辑！')
+            return api_response(ResponseCode.NOT_FOUND, '编辑失败！模块不存在，无法进行编辑！')
         serializer = PaperModuleSerializer(paper_module_instance, request.data)
         # 检查更新后的数据是否符合规则校验
         if serializer.is_valid():
