@@ -13,6 +13,7 @@ from .views import PaperQuetionsView
 
 urlpatterns = [
     path('paper', PaperBaseView.as_view(), name='PaperOpts'),
+    path('paper/<str:id>', PaperBaseView.as_view(), name='PaperOpts'),
     path('paperModule', PaperModuleView.as_view(), name='PaperModuleOpts'),
     path('paperQuestion', PaperQuetionsView.as_view(), name='PaperQuestionOpts')
 ]
