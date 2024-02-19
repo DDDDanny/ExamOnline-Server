@@ -69,6 +69,38 @@ class PaperBaseView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败！存在校验失败的字段', serializer.error_messages)
 
+    def get(self, request, **kwargs):
+        """get 查询试卷列表信息（根据试卷ID获取详情）
+        Args:
+            id (str): 试卷ID
+            request (Object): 请求参数
+        """
+        if len(kwargs.items()) != 0:
+            pass
+        else:
+            # 定义查询参数和它们对应的模型字段
+            query_params_mapping = {
+                'title': 'title__icontains',  # 模糊查询
+                'duration_minutes': 'duration_minutes',
+                'is_published': 'is_published',
+                'is_deleted': 'is_deleted',
+                # 添加其他查询参数和字段的映射
+            }
+             # 构建查询条件的字典
+            filters = {}
+            for param, field in query_params_mapping.items():
+                value = request.query_params.get(param, None)
+                if value is not None:
+                    filters[field] = value
+            # 执行查询
+            queryset = Paper.objects.filter(**filters)
+            # 序列化试题数据
+            serializer = PaperSerializer(queryset, many=True)
+            # 返回序列化后的数据
+            data = Response(serializer.data)
+            resp = { 'total': len(data.data), 'data': data.data }
+            return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
 
 class PaperModuleView(APIView):
     
