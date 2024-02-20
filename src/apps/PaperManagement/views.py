@@ -259,6 +259,17 @@ class PaperQuetionsView(APIView):
 
 
 class PaperCopyView(APIView):
+    def __remove_fields(self, fields_to_remove, instance_dict):
+        """__remove_fields
+        用于删除不需要的字段
+        Args:
+            fields_to_remove (list): 需要移除的字段
+            instance_dict (dict): 操作的实体字典
+        """
+        for field in fields_to_remove:
+            if field in instance_dict:
+                del instance_dict[field]
+    
     def post(self, request):
         """post 
             复制试卷信息（复制试卷本身信息以及试卷模块信息）
@@ -268,7 +279,6 @@ class PaperCopyView(APIView):
         try:
             # 获取需要复制的试卷实例
             paper_instance = model_to_dict(Paper.objects.get(id=request.data['id']))
-            print(paper_instance)
         except Paper.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '复制失败！试卷不存在，无法进行复制！')
         # ----- 复制 Paper -----
@@ -276,9 +286,7 @@ class PaperCopyView(APIView):
         paper_instance['created_user'] = request.data['created_user']
         # 删除指定字段
         fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id']
-        for field in fields_to_remove:
-            if field in paper_instance:
-                del paper_instance[field]
+        self.__remove_fields(fields_to_remove, paper_instance)
         # 序列化数据
         serializer = PaperSerializer(data=paper_instance)
         if serializer.is_valid():
@@ -297,9 +305,7 @@ class PaperCopyView(APIView):
                 module_info['created_user'] = request.data['created_user']
                 # 删除指定字段
                 fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id']
-                for field in fields_to_remove:
-                    if field in module_info:
-                        del module_info[field]
+                self.__remove_fields(fields_to_remove, module_info)
                 # 序列化数据
                 serializer = PaperModuleSerializer(data=module_info)
                 if serializer.is_valid():
