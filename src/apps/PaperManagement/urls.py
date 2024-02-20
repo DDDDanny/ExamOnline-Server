@@ -9,6 +9,7 @@ from django.urls import path
 from .views import PaperBaseView
 from .views import PaperModuleView
 from .views import PaperQuetionsView
+from .views import PaperCopyView
 
 
 urlpatterns = [
@@ -18,4 +19,5 @@ urlpatterns = [
     path('paperModule/<str:id>', PaperModuleView.as_view(), name='PaperModuleOpts'),
     path('paperQuestion', PaperQuetionsView.as_view(), name='PaperQuestionOpts'),
     path('paperQuestion/<str:id>', PaperQuetionsView.as_view(), name='PaperQuestionOpts'),
+    path('paperCopy', PaperCopyView.as_view(), name='PaperCopyOpts'),
 ]
