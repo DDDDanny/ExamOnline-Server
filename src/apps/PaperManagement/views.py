@@ -4,6 +4,7 @@
 # @File    : views.py
 # @Describe: Paper相关视图 
 
+from django.forms.models import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -255,6 +256,31 @@ class PaperQuetionsView(APIView):
             serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
             data = Response(serializer.data)
             return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
+
+
+class PaperCopyView(APIView):
+    def post(self, request):
+        try:
+            # 获取需要复制的试卷实例
+            paper_instance = model_to_dict(Paper.objects.get(id=request.data['id']))
+            print(paper_instance)
+        except Paper.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '复制失败！试卷不存在，无法进行复制！')
+        # 更新创建人（为复制的操作人）
+        paper_instance['created_user'] = request.data['created_user']
+        # 删除指定字段
+        fields_to_remove = ['updated_at', 'created_at', 'updated_user']
+        for field in fields_to_remove:
+            if field in paper_instance:
+                del paper_instance[field]
+        # 序列化数据
+        serializer = PaperSerializer(data=paper_instance)
+        if serializer.is_valid():
+            serializer.save()
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '复制成功', data.data)
+        else:
+            return api_response(ResponseCode.BAD_REQUEST, '复制失败', serializer.errors)
 
 
 if __name__ == '__main__':
