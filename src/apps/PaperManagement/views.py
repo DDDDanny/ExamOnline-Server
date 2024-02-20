@@ -260,16 +260,22 @@ class PaperQuetionsView(APIView):
 
 class PaperCopyView(APIView):
     def post(self, request):
+        """post 
+            复制试卷信息（复制试卷本身信息以及试卷模块信息）
+        Args:
+            request (object): { id: 被复制试卷ID, created_user: 创建人 } 
+        """
         try:
             # 获取需要复制的试卷实例
             paper_instance = model_to_dict(Paper.objects.get(id=request.data['id']))
             print(paper_instance)
         except Paper.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '复制失败！试卷不存在，无法进行复制！')
+        # ----- 复制 Paper -----
         # 更新创建人（为复制的操作人）
         paper_instance['created_user'] = request.data['created_user']
         # 删除指定字段
-        fields_to_remove = ['updated_at', 'created_at', 'updated_user']
+        fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id']
         for field in fields_to_remove:
             if field in paper_instance:
                 del paper_instance[field]
@@ -278,9 +284,30 @@ class PaperCopyView(APIView):
         if serializer.is_valid():
             serializer.save()
             data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '复制成功', data.data)
+            paper_copy_id = data.data['id']
         else:
             return api_response(ResponseCode.BAD_REQUEST, '复制失败', serializer.errors)
+        # ----- 复制 Paper Module -----
+        paper_module_instance = PaperModule.objects.filter(paper_id=request.data['id'])
+        if len(paper_module_instance) > 0:
+            for instance in paper_module_instance:
+                module_info = model_to_dict(instance)
+                # 更新创建人（为复制的操作人）
+                module_info['paper_id'] = paper_copy_id
+                module_info['created_user'] = request.data['created_user']
+                # 删除指定字段
+                fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id']
+                for field in fields_to_remove:
+                    if field in module_info:
+                        del module_info[field]
+                # 序列化数据
+                serializer = PaperModuleSerializer(data=module_info)
+                if serializer.is_valid():
+                    serializer.save()
+                    data = Response(serializer.data)
+                else:
+                    return api_response(ResponseCode.BAD_REQUEST, '复制失败', serializer.errors)
+        return api_response(ResponseCode.SUCCESS, '复制成功')
 
 
 if __name__ == '__main__':
