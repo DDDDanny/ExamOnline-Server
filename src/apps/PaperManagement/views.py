@@ -16,7 +16,9 @@ from src.utils.response_utils import ResponseCode, api_response
 
 
 class PaperBaseView(APIView):
-    
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         """post 创建试卷信息
         Args:
@@ -100,7 +102,9 @@ class PaperBaseView(APIView):
 
 
 class PaperModuleView(APIView):
-    
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         """post 创建试卷-模块信息
         Args:
@@ -176,7 +180,9 @@ class PaperModuleView(APIView):
 
 
 class PaperQuetionsView(APIView):
-    
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         """post 创建试卷-试题信息
         Args:
@@ -259,6 +265,9 @@ class PaperQuetionsView(APIView):
 
 
 class PaperCopyView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+
     def __remove_fields(self, fields_to_remove, instance_dict):
         """__remove_fields
         用于删除不需要的字段
