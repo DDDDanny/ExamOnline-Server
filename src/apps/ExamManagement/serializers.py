@@ -9,7 +9,7 @@ from rest_framework import serializers
 from .models import Exam
 
 
-class ExamSerializers(serializers.ModelSerializer):
+class ExamSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Exam
