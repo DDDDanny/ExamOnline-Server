@@ -4,6 +4,18 @@
 # @File    : views.py
 # @Describe: Exam应用视图层
 
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+from .models import Exam
+from .serializers import ExamSerializer
+from src.utils.response_utils import ResponseCode, api_response
+
+
+class ExamBaseView(APIView):
+    pass
+
+
+if __name__ == '__main__':
+    pass
