@@ -28,6 +28,22 @@ class ExamBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
+    def delete(self, _, **kwargs):
+        """delete 删除考试信息（逻辑删除）
+        Args:
+            _ (-): 缺省参数
+            id (Object): 考试ID
+        """
+        try:
+            exam_instance = Exam.objects.get(id=kwargs['id'])
+        except Exam.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '开始不存在，删除失败！')
+        # 在这里添加逻辑删除的代码
+        exam_instance.is_deleted = True
+        exam_instance.save()
+        # 返回成功响应
+        return api_response(ResponseCode.SUCCESS, '删除成功！')
+
 
 if __name__ == '__main__':
     pass
