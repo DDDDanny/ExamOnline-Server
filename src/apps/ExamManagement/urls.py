@@ -4,3 +4,11 @@
 # @File    : urls.py
 # @Describe: Exam应用URL
 
+from django.urls import path
+
+from .views import ExamBaseView
+
+
+urlpatterns = [
+     path('exam', ExamBaseView.as_view(), name='ExamOpts')
+]
