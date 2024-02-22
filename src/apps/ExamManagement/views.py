@@ -44,6 +44,29 @@ class ExamBaseView(APIView):
         # 返回成功响应
         return api_response(ResponseCode.SUCCESS, '删除成功！')
 
+    def put(self, request, **kwargs):
+        """put 编辑考试信息
+        Args:
+            id (str): 考试ID
+            request (Object): 请求参数
+        """
+        try:
+            # 获取需要编辑的试卷实例
+            exam_instance = Exam.objects.get(id=kwargs['id'])
+        except Exam.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '编辑失败！考试不存在，无法进行编辑！')
+        serializer = ExamSerializer(exam_instance, request.data)
+        # 检查更新后的数据是否符合规则校验
+        if serializer.is_valid():
+            # 保存验证过的数据以更新现有的 Paper 实例
+            serializer.save()
+            # 返回成功响应，包含序列化后的数据和 HTTP 200 OK 状态
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '编辑成功', data.data)
+        else:
+            # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
+            return api_response(ResponseCode.BAD_REQUEST, '编辑失败！存在校验失败的字段', serializer.error_messages)
+
 
 if __name__ == '__main__':
     pass
