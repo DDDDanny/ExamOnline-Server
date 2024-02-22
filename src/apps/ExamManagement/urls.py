@@ -10,5 +10,6 @@ from .views import ExamBaseView
 
 
 urlpatterns = [
-     path('exam', ExamBaseView.as_view(), name='ExamOpts')
+     path('exam', ExamBaseView.as_view(), name='ExamOpts'),
+     path('exam/<str:id>', ExamBaseView.as_view(), name='ExamOpts')
 ]
