@@ -14,6 +14,8 @@ from src.utils.response_utils import ResponseCode, api_response
 
 
 class ExamBaseView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     
     def post(self, request):
         """post 创建考试信息
