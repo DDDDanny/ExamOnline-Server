@@ -31,5 +31,22 @@ class ExamResult(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, help_text='更新时间')
 
 
+class ExamResultDetail(models.Model):
+    class Meta:
+        db_table = 'exam_result_detail'
+        
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # 考试结果ID
+    exam_result_id = models.CharField(max_length=255, help_text='考试结果ID')
+    # 试题ID
+    question_id = models.CharField(max_length=255, help_text='试题ID')
+    # 试题得分
+    mark = models.PositiveIntegerField(default=0, help_text='试题得分')
+    # 学生作答结果
+    solution = models.TextField(max_length=500, help_text='学生作答结果')
+    # 创建时间
+    created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
+
+
 if __name__ == '__main__':
     pass
