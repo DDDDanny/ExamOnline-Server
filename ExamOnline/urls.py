@@ -23,4 +23,5 @@ urlpatterns = [
     path("", include("src.apps.QuestionManagement.urls")),
     path("", include("src.apps.PaperManagement.urls")),
     path("", include("src.apps.ExamManagement.urls")),
+    path("", include("src.apps.ExamResult.urls")),
 ]
