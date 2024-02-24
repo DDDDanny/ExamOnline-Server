@@ -17,5 +17,9 @@ class ExamResultBaseView(APIView):
     pass
 
 
+class ExamResultDetailBaseView(APIView):
+    pass
+
+
 if __name__ == '__main__':
     pass
