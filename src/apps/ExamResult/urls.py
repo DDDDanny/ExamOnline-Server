@@ -6,7 +6,8 @@
 
 from django.urls import path
 
+from .views import ExamResultBaseView
 
 urlpatterns = [
-    
+    path('examResult', ExamResultBaseView.as_view(), name='ExamResultOpts')
 ]
