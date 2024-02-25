@@ -14,7 +14,19 @@ from src.utils.response_utils import ResponseCode, api_response
 
 
 class ExamResultBaseView(APIView):
-    pass
+    
+    def post(self, request):
+        """post 创建考试结果信息
+        Args:
+            request (Object): 请求参数
+        """
+        serializer = ExamResultSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+        else:
+            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
 
 class ExamResultDetailBaseView(APIView):
