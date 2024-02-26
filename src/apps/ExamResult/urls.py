@@ -9,5 +9,6 @@ from django.urls import path
 from .views import ExamResultBaseView
 
 urlpatterns = [
-    path('examResult', ExamResultBaseView.as_view(), name='ExamResultOpts')
+    path('examResult', ExamResultBaseView.as_view(), name='ExamResultOpts'),
+    path('examResult/<str:id>', ExamResultBaseView.as_view(), name='ExamResultOpts')
 ]
