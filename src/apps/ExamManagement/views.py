@@ -39,7 +39,7 @@ class ExamBaseView(APIView):
         try:
             exam_instance = Exam.objects.get(id=kwargs['id'])
         except Exam.DoesNotExist:
-            return api_response(ResponseCode.NOT_FOUND, '开始不存在，删除失败！')
+            return api_response(ResponseCode.NOT_FOUND, '考试不存在，删除失败！')
         # 在这里添加逻辑删除的代码
         exam_instance.is_deleted = True
         exam_instance.save()
