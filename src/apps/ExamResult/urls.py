@@ -7,8 +7,10 @@
 from django.urls import path
 
 from .views import ExamResultBaseView
+from .views import ExamResultDetailBaseView
 
 urlpatterns = [
     path('examResult', ExamResultBaseView.as_view(), name='ExamResultOpts'),
-    path('examResult/<str:id>', ExamResultBaseView.as_view(), name='ExamResultOpts')
+    path('examResult/<str:id>', ExamResultBaseView.as_view(), name='ExamResultOpts'),
+    path('examResultDetail', ExamResultDetailBaseView.as_view(), name='ExamResultDetailOpts'),
 ]
