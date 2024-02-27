@@ -125,6 +125,22 @@ class ExamResultDetailBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
+    def get(self, _, **kwargs):
+        """get 根据考试结果ID获取详情信息
+        Args:
+            _ (——): 缺省参数
+            id：试卷ID
+        Returns:
+            list: 模块信息列表
+        """
+        # 获取考试结果ID为入参的详情实例
+        exam_result_detal_instance = ExamResultDetail.objects.filter(exam_result_id=kwargs['id'])
+        if len(exam_result_detal_instance) == 0:
+            return api_response(ResponseCode.NOT_FOUND, '没有找到该考试结果的详情信息！')
+        else:
+            serializer = ExamResultDetailSerializer(exam_result_detal_instance, many=True)
+            data = Response(serializer.data)
+            return api_response(ResponseCode.SUCCESS, '获取考试结果详情成功', data.data)
 
 if __name__ == '__main__':
     pass
