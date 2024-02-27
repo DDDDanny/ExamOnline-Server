@@ -19,17 +19,27 @@ class ExamResultBaseView(APIView):
     permission_classes = [IsAuthenticated]
     
     def post(self, request):
-        """post 创建考试结果信息
+        """post 批量创建考试结果信息
         Args:
-            request (Object): 请求参数
+            request (Object): { "exam_id": 考试ID, "student_ids": 学生IDs }
         """
-        serializer = ExamResultSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+        student_ids = request.data['student_ids']
+        exam_result_list = []
+        if len(student_ids) == 0:
+            return api_response(ResponseCode.SUCCESS, '考试关联的学生为空！')
         else:
-            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+            for s_id in student_ids:
+                exam_result_list.append({
+                    'exam_id': request.data['exam_id'],
+                    'student_id': s_id
+                })   
+            serializer = ExamResultSerializer(data=exam_result_list, many=True)
+            if serializer.is_valid():
+                serializer.save()
+                data = Response(serializer.data)
+                return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+            else:
+                return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
     def delete(self, _, **kwargs):
         """delete 删除考试结果信息（物理删除）
