@@ -156,5 +156,6 @@ class ExamResultDetailBaseView(APIView):
             data = Response(serializer.data)
             return api_response(ResponseCode.SUCCESS, '获取考试结果详情成功', data.data)
 
+
 if __name__ == '__main__':
     pass
