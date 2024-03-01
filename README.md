@@ -1,7 +1,7 @@
-# 在线考试系统
+# 在线考试系统（后端）
 这个项目已经拖延了好几年了，2024年要重新开始动工，有需要这个项目做参考的同学，可以加我微信:MintBlueD，留言：GitHub  
 
-到时候我会拉一个群，大家来说说，前端想用Vue、React还是Angular😏，截止在24年2月底哦～
+前端项目：https://github.com/DDDDanny/ExamOnline-Front
 
 ---
 
