@@ -1,3 +1,7 @@
+<div>
+  <p align="center"><img src="READMELogo.png" style="zoom:20%;width:20%;" /></p>
+</div>
+
 # 在线考试系统（后端）
 这个项目已经拖延了好几年了，2024年要重新开始动工，有需要这个项目做参考的同学，可以加我微信:MintBlueD，留言：GitHub  
 
