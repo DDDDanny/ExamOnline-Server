@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'src.apps.PaperManagement',
     'src.apps.ExamManagement',
     'src.apps.ExamResult',
+    'src.apps.MenuManagement',
 ]
 
 MIDDLEWARE = [
