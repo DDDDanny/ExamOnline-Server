@@ -24,4 +24,5 @@ urlpatterns = [
     path("", include("src.apps.PaperManagement.urls")),
     path("", include("src.apps.ExamManagement.urls")),
     path("", include("src.apps.ExamResult.urls")),
+    path("", include("src.apps.MenuManagement.urls")),
 ]
