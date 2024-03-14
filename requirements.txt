@@ -4,3 +4,5 @@ mysqlclient==2.1.0
 djangorestframework_simplejwt==5.3.1
 # vscode需要下面这个
 importlib-metadata
+# 处理跨域
+django-cors-headers
