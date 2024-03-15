@@ -38,17 +38,23 @@ class MenuBaseView(APIView):
         if is_show_value is None:
             return api_response(ResponseCode.BAD_REQUEST, '获取菜单失败！角色错误！')
         elif is_show_value == 'Admin':
-            queryset = Menu.objects.filter().order_by('order')
+            queryset = Menu.objects.filter(parent_code='0').order_by('order')
         else:
             if is_show_value == 'Teacher' or is_show_value == 'Student':
-                queryset = Menu.objects.filter(Q(is_show=is_show_value) | Q(is_show='ALL')).order_by('order')
+                queryset = Menu.objects.filter(Q(is_show=is_show_value) | Q(
+                    is_show='ALL')).filter(parent_code='0').order_by('order')
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '获取菜单失败！角色错误！')
         # 序列化试题数据
         serializer = MenuSerializer(queryset, many=True)
+        # 获取二级菜单
+        for item in serializer.data:
+            child_menu_queryset = Menu.objects.filter(parent_code=item['code']).order_by('order')
+            child_serializer = MenuSerializer(child_menu_queryset, many=True)
+            item['child_menu'] = child_serializer.data
         # 返回序列化后的数据
         data = Response(serializer.data)
-        resp = { 'total': len(data.data), 'data': data.data }
+        resp = {'total': len(data.data), 'data': data.data}
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
