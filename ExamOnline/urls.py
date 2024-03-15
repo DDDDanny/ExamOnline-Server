@@ -19,10 +19,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("src.apps.UserManagement.urls")),
-    path("", include("src.apps.QuestionManagement.urls")),
-    path("", include("src.apps.PaperManagement.urls")),
-    path("", include("src.apps.ExamManagement.urls")),
-    path("", include("src.apps.ExamResult.urls")),
-    path("", include("src.apps.MenuManagement.urls")),
+    path("api/", include("src.apps.UserManagement.urls")),
+    path("api/", include("src.apps.QuestionManagement.urls")),
+    path("api/", include("src.apps.PaperManagement.urls")),
+    path("api/", include("src.apps.ExamManagement.urls")),
+    path("api/", include("src.apps.ExamResult.urls")),
+    path("api/", include("src.apps.MenuManagement.urls")),
 ]
