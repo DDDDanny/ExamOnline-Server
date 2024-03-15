@@ -30,6 +30,7 @@ class StudentLoginView(APIView):
         if user.password == password:
             refresh = CustomRefreshToken.for_user(user)
             data = {
+                'userId': user.id,
                 'name': user.name,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -55,6 +56,7 @@ class TeacherLoginView(APIView):
         if user.password == password:
             refresh = CustomRefreshToken.for_user(user)
             data = {
+                'userId': user.id,
                 'name': user.name,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
