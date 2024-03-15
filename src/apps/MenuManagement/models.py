@@ -22,5 +22,11 @@ class Menu(models.Model):
     is_show = models.CharField(default='ALL', max_length=50, help_text='根据角色显示')
     # 菜单Path
     path = models.CharField(max_length=255, help_text='path')
+    # 菜单父节点
+    parent_code = models.CharField(default='0',  max_length=255, help_text='菜单父节点')
     # 菜单排序
     order = models.PositiveIntegerField(default=0, help_text='菜单排序')
+
+
+if __name__ == '__main__':
+    pass
