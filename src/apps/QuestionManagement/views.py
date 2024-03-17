@@ -88,7 +88,7 @@ class QuestionBaseView(APIView):
         else:
             # 定义查询参数和它们对应的模型字段
             query_params_mapping = {
-                'topic': 'topic',
+                'topic': 'topic__icontains',
                 'type': 'type',
                 'is_deleted': 'is_deleted',
                 'status': 'status',
