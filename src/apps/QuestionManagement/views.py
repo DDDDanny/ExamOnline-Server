@@ -91,15 +91,20 @@ class QuestionBaseView(APIView):
                 'topic': 'topic',
                 'type': 'type',
                 'is_deleted': 'is_deleted',
-                'status': 'status'
+                'status': 'status',
+                'trial_type': 'trial_type',
+                'created_user': 'created_user'
                 # 添加其他查询参数和字段的映射
             }
             # 构建查询条件的字典
             filters = {}
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
-                if value is not None:
-                    filters[field] = value
+                if value is not None and value != '':
+                    if field == 'status' or field == 'is_deleted':
+                        filters[field] = True if value.lower() == 'true' else False
+                    else:
+                        filters[field] = value
             # 执行查询
             queryset = Questions.objects.filter(**filters)
             # 序列化试题数据
