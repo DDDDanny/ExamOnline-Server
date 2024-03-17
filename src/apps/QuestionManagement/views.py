@@ -7,6 +7,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Questions, QuestionsFavorite, ErrorArchive
 from .serializers import QuestionSerializer, QuestionFavoriteSerializer
@@ -29,8 +30,8 @@ class QuestionBaseView(APIView):
             data = Response(serializer.data)
             return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
         else:
-            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)      
-    
+            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+
     def put(self, request, **kwargs):
         """put 修改试题信息
         Args:
@@ -62,7 +63,7 @@ class QuestionBaseView(APIView):
             # 获取需要编辑的试题实例
             question_instance = Questions.objects.get(id=kwargs['id'])
         except Questions.DoesNotExist:
-            return api_response(ResponseCode.NOT_FOUND, '删除失败!试题不存在，无法进行删除！') 
+            return api_response(ResponseCode.NOT_FOUND, '删除失败!试题不存在，无法进行删除！')
         question_instance.is_deleted = True
         question_instance.save()
         # 返回成功响应和 HTTP 200 OK 状态
@@ -107,18 +108,22 @@ class QuestionBaseView(APIView):
                         filters[field] = value
             # 执行查询
             queryset = Questions.objects.filter(**filters)
-            # 序列化试题数据
-            serializer = QuestionSerializer(queryset, many=True)
-            # 返回序列化后的数据
-            data = Response(serializer.data)
-            resp = { 'total': len(data.data), 'data': data.data }
+            # 实例化分页器并配置参数
+            paginator = PageNumberPagination()
+            paginator.page_size = int(request.query_params.get('pageSize', 50))
+            paginator.page_query_param = 'currentPage'
+            # 进行分页处理
+            paginated_queryset = paginator.paginate_queryset(queryset, request)
+            # 序列化分页后的试题数据
+            serializer = QuestionSerializer(paginated_queryset, many=True)
+            resp = {'total': len(queryset), 'data': serializer.data}
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
 class QuestionFavoriteView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    
+
     def __get_favorite_count(self, user_id, q_id):
         """__get_favorite_count 获取收藏信息数量
         Args:
@@ -126,14 +131,15 @@ class QuestionFavoriteView(APIView):
             q_id (UUID): 试题ID
         """
         return QuestionsFavorite.objects.filter(collector=user_id, question_id=q_id).count()
-    
+
     def post(self, request):
         """post 收藏试题接口
         Args:
             request (Object): 请求参数
         """
         # 获取收藏信息数量
-        favorite_count = self.__get_favorite_count(request.data['collector'], request.data['question_id'])
+        favorite_count = self.__get_favorite_count(
+            request.data['collector'], request.data['question_id'])
         if favorite_count > 0:
             return api_response(ResponseCode.SUCCESS, '收藏失败！已有收藏记录，无需再次收藏！')
         else:
@@ -144,14 +150,15 @@ class QuestionFavoriteView(APIView):
                 return api_response(ResponseCode.SUCCESS, '收藏成功！', data.data)
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '收藏失败！', serializer.errors)
-            
+
     def delete(self, request):
         """delete 取消收藏试题接口
         Args:
             request (Object): 请求参数
         """
         # 获取收藏信息数量
-        favorite_count = self.__get_favorite_count(request.data['collector'], request.data['question_id'])
+        favorite_count = self.__get_favorite_count(
+            request.data['collector'], request.data['question_id'])
         if favorite_count <= 0:
             return api_response(ResponseCode.SUCCESS, '取消收藏失败！没有收藏记录，无需取消收藏！')
         else:
@@ -164,7 +171,7 @@ class QuestionFavoriteView(APIView):
                 return api_response(ResponseCode.SUCCESS, '取消收藏成功！')
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
-    
+
     def get(self, _, **kwargs):
         """get 根据收藏者ID获取收藏的试题列表
         Args:
@@ -176,14 +183,14 @@ class QuestionFavoriteView(APIView):
         serializer = QuestionFavoriteSerializer(queryset, many=True)
         # 返回序列化后的数据
         data = Response(serializer.data)
-        resp = { 'total': len(data.data), 'data': data.data }
+        resp = {'total': len(data.data), 'data': data.data}
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
 class ErrorArchiveView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    
+
     def __get_error_question_count(self, user_id, q_id):
         """__get_error_question_count 获取收藏错题数量
         Args:
@@ -193,14 +200,15 @@ class ErrorArchiveView(APIView):
             number: 错题数量
         """
         return ErrorArchive.objects.filter(collector=user_id, question_id=q_id).count()
-    
+
     def post(self, request):
         """post 错题收藏接口
         Args:
             request (object): 请求参数
         """
         # 获取收藏错题信息数量
-        archive_count = self.__get_error_question_count(request.data['collector'], request.data['question_id'])
+        archive_count = self.__get_error_question_count(
+            request.data['collector'], request.data['question_id'])
         if archive_count > 0:
             return api_response(ResponseCode.SUCCESS, '加入错题集失败！已有错题记录，无需再次收藏！')
         else:
@@ -218,11 +226,12 @@ class ErrorArchiveView(APIView):
             request (Object): 请求参数
         """
         # 获取收藏错题信息数量
-        archive_count = self.__get_error_question_count(request.data['collector'], request.data['question_id'])
+        archive_count = self.__get_error_question_count(
+            request.data['collector'], request.data['question_id'])
         if archive_count <= 0:
             return api_response(ResponseCode.SUCCESS, '取消收藏错题失败！没有收藏记录，无需取消收藏！')
         else:
-             # 查询收藏记录
+            # 查询收藏记录
             archive_entry = ErrorArchive.objects.filter(
                 collector=request.data['collector'], question_id=request.data['question_id'])
             if archive_entry:
@@ -243,7 +252,7 @@ class ErrorArchiveView(APIView):
         serializer = ErrorArchiveSerializer(queryset, many=True)
         # 返回序列化后的数据
         data = Response(serializer.data)
-        resp = { 'total': len(data.data), 'data': data.data }
+        resp = {'total': len(data.data), 'data': data.data}
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
     def put(self, request, **kwargs):
