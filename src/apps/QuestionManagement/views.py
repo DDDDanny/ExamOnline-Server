@@ -40,6 +40,9 @@ class QuestionBaseView(APIView):
         try:
             # 获取需要编辑的试题实例
             question_instance = Questions.objects.get(id=kwargs['id'])
+            del request.data['updatedAt']
+            del request.data['createdAt']
+            del request.data['id']
         except Questions.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '编辑失败!试题不存在，无法进行修改！')
         serializer = QuestionSerializer(question_instance, request.data)
