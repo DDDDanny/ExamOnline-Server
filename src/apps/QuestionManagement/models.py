@@ -17,8 +17,10 @@ class Questions(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # 试题标题
     topic = models.TextField(max_length=500, help_text='试题标题')
+    # 试题选项
+    options = models.TextField(default='T&F', max_length=500, help_text='试题选项')
     # 试题答案
-    answer = models.TextField(max_length=500, help_text='试题答案')
+    answer = models.CharField(max_length=50, help_text='试题参考答案')
     # 试题类型
     TYPE_CHOICES = [('select', 'Select'),('judge', 'Judge')]
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='select', help_text='试题类型')
