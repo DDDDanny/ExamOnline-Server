@@ -118,6 +118,13 @@ class QuestionBaseView(APIView):
             paginated_queryset = paginator.paginate_queryset(queryset, request)
             # 序列化分页后的试题数据
             serializer = QuestionSerializer(paginated_queryset, many=True)
+            # 若有收藏者信息，就新增「favorite」字段
+            collector = request.query_params.get('collector', None)
+            if collector is not None and collector != '':
+                # 获取该收藏者收藏的试题ID
+                questions_ids = list(QuestionsFavorite.objects.filter(collector=collector).values_list('question_id', flat=True))
+                for item in serializer.data:
+                    item['favorite'] = True if item['id'] in questions_ids else False
             resp = {'total': len(queryset), 'data': serializer.data}
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
@@ -143,7 +150,7 @@ class QuestionFavoriteView(APIView):
         favorite_count = self.__get_favorite_count(
             request.data['collector'], request.data['question_id'])
         if favorite_count > 0:
-            return api_response(ResponseCode.SUCCESS, '收藏失败！已有收藏记录，无需再次收藏！')
+            return api_response(ResponseCode.BAD_REQUEST, '收藏失败！已有收藏记录，无需再次收藏！')
         else:
             serializer = QuestionFavoriteSerializer(data=request.data)
             if serializer.is_valid():
