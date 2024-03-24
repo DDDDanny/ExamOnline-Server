@@ -71,13 +71,7 @@ class QuestionFavoriteSerializer(serializers.ModelSerializer):
     def get_question_info(self, obj):
         question_instance = Questions.objects.filter(id=obj.question_id, is_deleted=False).first()
         if question_instance:
-            return {
-                'id': question_instance.id,
-                'topic': question_instance.topic, 
-                'type': question_instance.type,
-                'trial_type': question_instance.trial_type,
-                # 可以再加需要的数据
-            }
+            return QuestionSerializer(question_instance).data
         else:
             return None
     
