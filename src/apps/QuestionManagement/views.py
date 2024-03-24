@@ -187,12 +187,29 @@ class QuestionFavoriteView(APIView):
             _ (any): 缺省参数
             id (str): 收藏者ID
         """
+        # 定义查询参数和它们对应的模型字段
+        query_params_mapping = {
+            'topic': 'topic__icontains',
+            'type': 'type',
+            'status': 'status',
+            'trial_type': 'trial_type',
+            # 添加其他查询参数和字段的映射
+        }
+        # 构建查询条件的字典
+        filters = {}
+        for param, field in query_params_mapping.items():
+            value = request.query_params.get(param, None)
+            if value is not None and value != '':
+                if field == 'status' or field == 'is_deleted':
+                    filters[field] = True if value.lower() == 'true' else False
+                else:
+                    filters[field] = value
         # 首先获取符合条件的 Question 的主键列表
-        question_ids = Questions.objects.filter(status=True, trial_type='public').values_list('id', flat=True)
+        question_ids = Questions.objects.filter(**filters).values_list('id', flat=True)
         # 数据转换
         question_ids_str = [str(item) for item in list(question_ids)]
         # 使用二次查询过滤 QuestionsFavorite
-        queryset = QuestionsFavorite.objects.filter(collector=kwargs['id']).filter(question_id__in=question_ids_str)
+        queryset = QuestionsFavorite.objects.filter(collector=kwargs['id']).filter(question_id__in=question_ids_str).order_by('-created_at')
         # 实例化分页器并配置参数
         paginator = PageNumberPagination()
         paginator.page_size = int(request.query_params.get('pageSize', 50))
