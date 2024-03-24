@@ -187,7 +187,12 @@ class QuestionFavoriteView(APIView):
             _ (any): 缺省参数
             id (str): 收藏者ID
         """
-        queryset = QuestionsFavorite.objects.filter(collector=kwargs['id'])
+        # 首先获取符合条件的 Question 的主键列表
+        question_ids = Questions.objects.filter(status=True, trial_type='public').values_list('id', flat=True)
+        # 数据转换
+        question_ids_str = [str(item) for item in list(question_ids)]
+        # 使用二次查询过滤 QuestionsFavorite
+        queryset = QuestionsFavorite.objects.filter(collector=kwargs['id']).filter(question_id__in=question_ids_str)
         # 实例化分页器并配置参数
         paginator = PageNumberPagination()
         paginator.page_size = int(request.query_params.get('pageSize', 50))
