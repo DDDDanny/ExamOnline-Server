@@ -65,7 +65,7 @@ class ErrorArchive(models.Model):
     explanation = models.TextField(max_length=500, help_text='错题解析')
     # 错题难度
     DIFFICULTY_CHOICES = (('E', 'Easy'), ('M', 'Medium'), ('H', 'Hard'))
-    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='select', help_text='错题难度')
+    difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='M', help_text='错题难度')
     # 收藏者ID
     collector = models.CharField(max_length=50, help_text='收藏者ID')
     # 创建时间
