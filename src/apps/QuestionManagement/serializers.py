@@ -7,7 +7,7 @@
 from rest_framework import serializers
 
 from .models import Questions, QuestionsFavorite, ErrorArchive
-from src.apps.UserManagement.models import Teacher
+from src.apps.UserManagement.models import Teacher, Student
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -90,14 +90,40 @@ class QuestionFavoriteSerializer(serializers.ModelSerializer):
 
 
 class ErrorArchiveSerializer(serializers.ModelSerializer):
+    collector_info = serializers.SerializerMethodField()
+    question_info = serializers.SerializerMethodField()
+    
     class Meta:
         model = ErrorArchive
         fields = '__all__'
+        # 添加额外的字段
+        extra_field = ['collector_info', 'question_info']
         # 一些额外的属性
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
 
-
+    # 获取试题信息
+    def get_question_info(self, obj):
+        question_instance = Questions.objects.filter(id=obj.question_id).first()
+        if question_instance:
+            return QuestionSerializer(question_instance).data
+        else:
+            return None
+    
+    # 获取收藏者信息
+    def get_collector_info(self, obj):
+        teacher_instance = Student.objects.filter(id=obj.collector).first()
+        if teacher_instance:
+            return {
+                'id': teacher_instance.id,
+                'name': teacher_instance.name, 
+                'username': teacher_instance.username,
+                # 可以再加需要的数据
+            }
+        else:
+            return None
+    
+    
 if __name__ == '__main__':
     pass
