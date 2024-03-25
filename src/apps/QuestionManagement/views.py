@@ -276,18 +276,48 @@ class ErrorArchiveView(APIView):
             else:
                 return api_response(ResponseCode.BAD_REQUEST, '取消收藏失败！没有找到相关的收藏记录！')
 
-    def get(self, _, **kwargs):
+    def get(self, request, **kwargs):
         """get 根据收藏者ID获取错题集的试题列表
         Args:
-            _ (any): 缺省参数
+            request (any): 请求参数
             id (str): 收藏者ID
         """
-        queryset = ErrorArchive.objects.filter(collector=kwargs['id'])
-        # 序列化试题数据
-        serializer = ErrorArchiveSerializer(queryset, many=True)
+        # 定义查询参数和它们对应的模型字段
+        query_params_mapping = {
+            'topic': 'topic__icontains',
+            'type': 'type',
+            # 添加其他查询参数和字段的映射
+        }
+        # 构建查询条件的字典
+        filters = {}
+        for param, field in query_params_mapping.items():
+            value = request.query_params.get(param, None)
+            if value is not None and value != '':
+                if field == 'status' or field == 'is_deleted':
+                    filters[field] = True if value.lower() == 'true' else False
+                else:
+                    filters[field] = value
+        # 首先获取符合条件的 Question 的主键列表
+        question_ids = Questions.objects.filter(**filters).values_list('id', flat=True)
+        # 数据转换
+        question_ids_str = [str(item) for item in list(question_ids)]
+        # 对试题难度进行筛选
+        difficulty = request.query_params.get('difficulty', None)
+        if difficulty is not None and difficulty != '':
+            queryset = ErrorArchive.objects.filter(difficulty=difficulty, collector=kwargs['id']).filter(question_id__in=question_ids_str).order_by('-created_at')
+        else:
+            queryset = ErrorArchive.objects.filter(collector=kwargs['id']).filter(question_id__in=question_ids_str).order_by('-created_at')
+        # 实例化分页器并配置参数
+        paginator = PageNumberPagination()
+        paginator.page_size = int(request.query_params.get('pageSize', 50))
+        paginator.page_query_param = 'currentPage'
+        # 进行分页处理
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        # 序列化分页后的试题数据
+        serializer = ErrorArchiveSerializer(paginated_queryset, many=True)
         # 返回序列化后的数据
         data = Response(serializer.data)
-        resp = {'total': len(data.data), 'data': data.data}
+        resp = {'total': len(queryset), 'data': data.data}
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
     def put(self, request, **kwargs):
