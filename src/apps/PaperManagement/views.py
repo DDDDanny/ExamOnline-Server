@@ -363,6 +363,10 @@ class PaperPublishView(APIView):
             paper = Paper.objects.get(id=request.data['id'])
         except Exception:
             return api_response(ResponseCode.BAD_REQUEST, '发布失败！试卷不存在，请重新操作！')
+        # 校验：是否关联试题，若没有关联，不允许发布
+        paper_question = PaperQuestions.objects.filter(paper_id=request.data['id'])
+        if len(paper_question) == 0:
+            return api_response(ResponseCode.BAD_REQUEST, '发布失败！试卷未关联试题，请关联试题后重新操作！')
         # 更新字段
         paper.is_published = True
         paper.publish_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
