@@ -46,6 +46,7 @@ class PaperSerializer(serializers.ModelSerializer, UserInfoMixin):
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
             'updated_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+            'publish_date': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
     
     # 获取创建人信息
