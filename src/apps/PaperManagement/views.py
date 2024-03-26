@@ -6,6 +6,7 @@
 
 from datetime import datetime
 
+from django.db.models import Sum
 from django.forms.models import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -122,6 +123,10 @@ class PaperBaseView(APIView):
             paginated_queryset = paginator.paginate_queryset(queryset, request)
             # 序列化试题数据
             serializer = PaperSerializer(paginated_queryset, many=True)
+            # 计算实际总分
+            for item in serializer.data:
+                result = PaperQuestions.objects.filter(paper_id=item['id']).aggregate(actual_total=Sum('marks'))
+                item['actual_total'] = result['actual_total']
             resp = { 'total': len(queryset), 'data': serializer.data }
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
