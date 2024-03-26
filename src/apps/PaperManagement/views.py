@@ -2,7 +2,9 @@
 # @Time    : 2024/02/07 09:58:21
 # @Author  : DannyDong
 # @File    : views.py
-# @Describe: Paper相关视图 
+# @Describe: Paper相关视图
+
+from datetime import datetime
 
 from django.forms.models import model_to_dict
 from rest_framework.views import APIView
@@ -347,6 +349,41 @@ class PaperCopyView(APIView):
                     return api_response(ResponseCode.BAD_REQUEST, '复制失败', serializer.errors)
         return api_response(ResponseCode.SUCCESS, '复制成功')
 
+
+class PaperPublishView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        """post 发布试卷
+        Args:
+            request (Object): 请求参数
+        """
+        try:
+            paper = Paper.objects.get(id=request.data['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '发布失败！试卷不存在，请重新操作！')
+        # 更新字段
+        paper.is_published = True
+        paper.publish_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        paper.save()
+        return api_response(ResponseCode.SUCCESS, '试卷发布成功')
+    
+    def delete(self, request):
+        """delete 取消发布
+        Args:
+            request (Object): 请求参数
+        """
+        try:
+            paper = Paper.objects.get(id=request.data['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '取消发布失败！试卷不存在，请重新操作！')
+        # 更新字段
+        paper.is_published = False
+        paper.publish_date = None
+        paper.save()
+        return api_response(ResponseCode.SUCCESS, '取消发布成功')
+    
 
 if __name__ == '__main__':
     pass
