@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Paper, PaperModule, PaperQuestions
 from .serializers import PaperQuestionsSerializer
@@ -97,21 +98,29 @@ class PaperBaseView(APIView):
                 'duration_minutes': 'duration_minutes',
                 'is_published': 'is_published',
                 'is_deleted': 'is_deleted',
+                'created_user': 'created_user',
                 # 添加其他查询参数和字段的映射
             }
                 # 构建查询条件的字典
             filters = {}
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
-                if value is not None:
-                    filters[field] = value
+                if value is not None and value != '':
+                    if field == 'is_published' or field == 'is_deleted':
+                        filters[field] = True if value.lower() == 'true' else False
+                    else:
+                        filters[field] = value
             # 执行查询
             queryset = Paper.objects.filter(**filters)
+            # 实例化分页器并配置参数
+            paginator = PageNumberPagination()
+            paginator.page_size = int(request.query_params.get('pageSize', 50))
+            paginator.page_query_param = 'currentPage'
+            # 进行分页处理
+            paginated_queryset = paginator.paginate_queryset(queryset, request)
             # 序列化试题数据
-            serializer = PaperSerializer(queryset, many=True)
-            # 返回序列化后的数据
-            data = Response(serializer.data)
-            resp = { 'total': len(data.data), 'data': data.data }
+            serializer = PaperSerializer(paginated_queryset, many=True)
+            resp = { 'total': len(queryset), 'data': serializer.data }
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
