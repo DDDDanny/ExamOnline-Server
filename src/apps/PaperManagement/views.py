@@ -101,6 +101,7 @@ class PaperBaseView(APIView):
                 'duration_minutes': 'duration_minutes',
                 'is_published': 'is_published',
                 'is_deleted': 'is_deleted',
+                'is_public': 'is_public',
                 'created_user': 'created_user',
                 # 添加其他查询参数和字段的映射
             }
