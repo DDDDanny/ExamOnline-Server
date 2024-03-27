@@ -110,15 +110,23 @@
 我是用Docker安装的MySQL，更加方便一些，下面👇是下载&启动命令：  
 ##### 下载
 
-```
+```bash
 docker pull mysql:8.2
 ```
 
 ##### 启动容器  
 
-```
+```bash
 docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
 ```
+
+##### 导入预制数据
+
+```bash
+python3 manage.py loaddata initial_data.json
+```
+
+⚠️ 注意：导入预制数据前需要先进行migrate。由于预制数据会在开发过程中发生变化，如果更新预制数据，最好先清表，再重新导入。
 
 
 ---
