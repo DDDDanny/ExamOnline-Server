@@ -60,6 +60,8 @@ class PaperBaseView(APIView):
         try:
             # 获取需要编辑的试卷实例
             paper_instance = Paper.objects.get(id=kwargs['id'])
+            # 删除不需要的参数
+            del request.data['updated_at'], request.data['created_at'], request.data['id']
         except Paper.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '编辑失败！试卷不存在，无法进行编辑！')
         serializer = PaperSerializer(paper_instance, request.data)
