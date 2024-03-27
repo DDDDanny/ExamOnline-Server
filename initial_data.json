@@ -1,0 +1,151 @@
+[
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10008",
+            "name": "在线考试",
+            "is_show": "Student",
+            "path": "/examOnline",
+            "order": 8,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10003_2",
+            "name": "公共试卷库",
+            "is_show": "Teacher",
+            "path": "/publicPapers",
+            "order": 2,
+            "parent_code": "10003"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10001",
+            "name": "试题管理",
+            "is_show": "Teacher",
+            "path": "/questionManagement",
+            "order": 1,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10001_2",
+            "name": "公共题库",
+            "is_show": "Teacher",
+            "path": "/publicQuestions",
+            "order": 1,
+            "parent_code": "10001"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10007",
+            "name": "教师管理",
+            "is_show": "Admin",
+            "path": "/teacher",
+            "order": 7,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10002",
+            "name": "错题集",
+            "is_show": "Student",
+            "path": "/errorArchive",
+            "order": 2,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10001_1",
+            "name": "个人题库",
+            "is_show": "Teacher",
+            "path": "/personalWarehouse",
+            "order": 0,
+            "parent_code": "10001"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10003_1",
+            "name": "个人试卷库",
+            "is_show": "Teacher",
+            "path": "/personalPapers",
+            "order": 1,
+            "parent_code": "10003"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10006",
+            "name": "学生管理",
+            "is_show": "Teacher",
+            "path": "/student",
+            "order": 6,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10005",
+            "name": "成绩管理",
+            "is_show": "ALL",
+            "path": "/examResult",
+            "order": 5,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10004",
+            "name": "考试管理",
+            "is_show": "Teacher",
+            "path": "/exam",
+            "order": 4,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10003",
+            "name": "试卷管理",
+            "is_show": "Teacher",
+            "path": "/paperManagement",
+            "order": 3,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "UserManagement.Teacher",
+        "fields": {
+            "username": "admin",
+            "password": "1",
+            "name": "Admin",
+            "role": "teacher",
+            "gender": "male",
+            "is_active": 1,
+            "is_deleted": 0,
+            "phone": "13555558888",
+            "email": null,
+            "created_at": "2024-01-09 18:46:29.445603",
+            "updated_at": "2024-03-22 13:18:26.122150",
+            "teacher_id": "202401010001t"
+        }
+    }
+]
