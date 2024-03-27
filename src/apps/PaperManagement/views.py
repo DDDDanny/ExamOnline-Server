@@ -36,15 +36,13 @@ class PaperBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
-    def delete(self, request):
+    def delete(self, _, **kwargs):
         """delete 删除试卷信息（逻辑删除）
         Args:
-            request (Object): 请求参数
+            kwargs (Object): id: 试卷ID
         """
-        # 获取要删除的试卷
-        paper_id = request.data.get('id')
         try:
-            paper_instance = Paper.objects.get(id=paper_id)
+            paper_instance = Paper.objects.get(id=kwargs['id'])
         except Paper.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '试卷不存在，删除失败！')
         # 在这里添加逻辑删除的代码
