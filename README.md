@@ -122,6 +122,8 @@ docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
 
 ##### 导入预制数据
 
+预制`菜单项`、`教师用户`
+
 ```bash
 python3 manage.py loaddata initial_data.json
 ```
