@@ -27,6 +27,8 @@ class Paper(models.Model):
     is_published = models.BooleanField(default=False, help_text='是否发布')
     # 发布时间
     publish_date = models.DateTimeField(null=True, blank=True, verbose_name='发布时间')
+    # 是否属于公共试卷库
+    is_public = models.BooleanField(default=False, help_text='是否属于公共试卷库')
     # 是否删除
     is_deleted = models.BooleanField(default=False, help_text='是否删除')
     # 创建人
