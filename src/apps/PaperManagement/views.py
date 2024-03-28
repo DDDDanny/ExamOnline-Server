@@ -200,14 +200,15 @@ class PaperModuleView(APIView):
         Returns:
             list: 模块信息列表
         """
+        try:
+            Paper.objects.get(id=kwargs['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '没有找到该试卷相关信息！')
         # 获取需要编辑的试卷-模块实例（进行排序）
         paper_module_instance = PaperModule.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
-        if len(paper_module_instance) == 0:
-            return api_response(ResponseCode.NOT_FOUND, '没有找到该试卷关联的模块信息！')
-        else:
-            serializer = PaperModuleSerializer(paper_module_instance, many=True)
-            data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '获取试卷模块详情成功', data.data)
+        serializer = PaperModuleSerializer(paper_module_instance, many=True)
+        data = Response(serializer.data)
+        return api_response(ResponseCode.SUCCESS, '获取试卷模块详情成功', data.data)
 
 
 class PaperQuetionsView(APIView):
