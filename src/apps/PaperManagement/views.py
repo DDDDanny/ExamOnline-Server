@@ -141,6 +141,11 @@ class PaperModuleView(APIView):
         Args:
             request (Object): 请求参数
         """
+        # 获取该试卷的模块
+        paper_id = request.data['paper_id']
+        queryset = PaperModule.objects.filter(paper_id=paper_id)
+        # 根据模块，配置顺序
+        request.data['sequence_number'] = len(queryset) + 1
         serializer = PaperModuleSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
