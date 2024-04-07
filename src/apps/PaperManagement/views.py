@@ -110,7 +110,7 @@ class PaperBaseView(APIView):
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
                 if value is not None and value != '':
-                    if field == 'is_published' or field == 'is_deleted':
+                    if field == 'is_published' or field == 'is_deleted' or field == 'is_public':
                         filters[field] = True if value.lower() == 'true' else False
                     else:
                         filters[field] = value
