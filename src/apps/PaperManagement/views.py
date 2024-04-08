@@ -216,6 +216,31 @@ class PaperModuleView(APIView):
         return api_response(ResponseCode.SUCCESS, '获取试卷模块详情成功', data.data)
 
 
+class PaperModuleSortView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        """put 更新试卷-模块顺序
+        Args:
+            request (Object): 请求参数：modules: []
+        """
+        instance_suites = {}
+        for item in request.data['modules']:
+            try:
+                paper_module_instance = PaperModule.objects.get(id=item['id'])
+                instance_suites[item['id']] = paper_module_instance
+            except Exception:
+                return api_response(ResponseCode.NOT_FOUND, '调整顺序失败！模块不存在，无法进行调整！')
+        
+        for item in request.data['modules']:
+            instance = instance_suites[item['id']]
+            instance.sequence_number = item['index']
+            instance.updated_user = item['updated_user']
+            instance.save()
+        return api_response(ResponseCode.SUCCESS, '模块重新排序成功！')
+
+
 class PaperQuetionsView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
