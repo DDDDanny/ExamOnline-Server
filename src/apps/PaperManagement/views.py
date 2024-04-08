@@ -225,19 +225,17 @@ class PaperModuleSortView(APIView):
         Args:
             request (Object): 请求参数：modules: []
         """
-        instance_suites = {}
+        instance_suites = []
         for item in request.data['modules']:
             try:
                 paper_module_instance = PaperModule.objects.get(id=item['id'])
-                instance_suites[item['id']] = paper_module_instance
+                paper_module_instance.sequence_number = item['index']
+                paper_module_instance.updated_user = item['updated_user']
+                instance_suites.append(paper_module_instance)
             except Exception:
                 return api_response(ResponseCode.NOT_FOUND, '调整顺序失败！模块不存在，无法进行调整！')
-        
-        for item in request.data['modules']:
-            instance = instance_suites[item['id']]
-            instance.sequence_number = item['index']
-            instance.updated_user = item['updated_user']
-            instance.save()
+        # 批量更新
+        PaperModule.objects.bulk_update(instance_suites, ['sequence_number', 'updated_user'])
         return api_response(ResponseCode.SUCCESS, '模块重新排序成功！')
 
 
