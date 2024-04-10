@@ -355,8 +355,10 @@ class PaperCopyView(APIView):
         # ----- 复制 Paper -----
         # 更新创建人（为复制的操作人）
         paper_instance['created_user'] = request.data['created_user']
+        # 更新试卷Title
+        paper_instance['title'] = '复制 - ' + paper_instance['title']
         # 删除指定字段
-        fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id']
+        fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id', 'is_published', 'publish_date']
         self.__remove_fields(fields_to_remove, paper_instance)
         # 序列化数据
         serializer = PaperSerializer(data=paper_instance)
