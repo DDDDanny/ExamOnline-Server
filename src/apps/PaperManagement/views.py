@@ -316,14 +316,15 @@ class PaperQuetionsView(APIView):
         Returns:
             list: 试题信息列表
         """
+        try:
+            Paper.objects.get(id=kwargs['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '没有找到该试卷相关信息！')
         # 获取需要编辑的试卷-试题实例（进行排序）
         paper_question_instance = PaperQuestions.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
-        if len(paper_question_instance) == 0:
-            return api_response(ResponseCode.NOT_FOUND, '没有找到该试卷关联的试题信息！')
-        else:
-            serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
-            data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
+        serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
+        data = Response(serializer.data)
+        return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
 
 
 class PaperCopyView(APIView):
