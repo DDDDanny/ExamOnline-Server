@@ -110,7 +110,6 @@ class PaperQuestionsSerializer(serializers.ModelSerializer):
             return {
                 'id': question_instance.id,
                 'topic': question_instance.topic, 
-                'answer': question_instance.answer,
                 'type': question_instance.type,
                 # 可以再加需要的数据
             }
