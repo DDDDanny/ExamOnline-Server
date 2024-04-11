@@ -169,7 +169,7 @@ class PaperModuleView(APIView):
             return api_response(ResponseCode.NOT_FOUND, '模块不存在，删除失败')
         paper_questions = PaperQuestions.objects.filter(paper_id=paper_id, module=module_id)
         if len(paper_questions) > 0:
-            return api_response(ResponseCode.BAD_REQUEST, '该模块存在绑定的试题，无法删除！')
+            return api_response(ResponseCode.BAD_REQUEST, '该模块已关联试题，无法删除！')
         else:
             module_instance.delete()
             return api_response(ResponseCode.SUCCESS, '删除模块成功！')
