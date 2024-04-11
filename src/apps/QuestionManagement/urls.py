@@ -9,6 +9,7 @@ from django.urls import path
 from .views import QuestionBaseView
 from .views import QuestionFavoriteView
 from .views import ErrorArchiveView
+from .views import QuestionsWarehouseForPaper
 
 
 urlpatterns = [
@@ -18,6 +19,7 @@ urlpatterns = [
     path('qFavorite/<str:id>', QuestionFavoriteView.as_view(), name='QuestionsFavoriteOpts'),
     path('errorArchive', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
     path('errorArchive/<str:id>', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
+    path('questionWarehouse', QuestionsWarehouseForPaper.as_view(), name='QuestionWarehouseOpts'),
 ]
 
 
