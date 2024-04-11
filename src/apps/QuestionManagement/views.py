@@ -4,6 +4,7 @@
 # @File    : views.py
 # @Describe: Question相关视图
 
+from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -344,5 +345,24 @@ class ErrorArchiveView(APIView):
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败! 存在校验失败的字段！', serializer.error_messages)
 
 
+class QuestionsWarehouseForPaper(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """get 获取试题信息（ 用于试卷题库 ）
+        Args:
+            request (Object): 请求参数
+        """
+        user_id = request.query_params.get('user_id', None)
+        # 获取需要编辑的试卷-模块实例（进行排序）
+        questions_instance = Questions.objects.filter(
+            status=True, is_deleted=False).filter(
+                Q(created_user=user_id) | Q(trial_type='public')).order_by('created_at')
+        serializer = QuestionSerializer(questions_instance, many=True)
+        data = Response(serializer.data)
+        return api_response(ResponseCode.SUCCESS, '获取题库试题成功！', data.data)
+    
+    
 if __name__ == '__main__':
     pass
