@@ -246,17 +246,25 @@ class PaperQuetionsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        """post 创建试卷-试题信息
+        """post 试卷批量关联试题信息
         Args:
             request (Object): 请求参数
         """
-        serializer = PaperQuestionsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+        serializers = [PaperQuestionsSerializer(data=item) for item in request.data]
+        # 如果有任何一个序列化器的数据无效，则收集错误，并返回部分创建失败的响应。
+        errors = []
+        # 如果所有序列化器的数据都有效，则返回成功的响应，并包含创建成功的数据列表。
+        saved_data = []
+        for serializer in serializers:
+            if serializer.is_valid():
+                serializer.save()
+                saved_data.append(serializer.data)
+            else:
+                errors.append(serializer.errors)
+        if errors:
+            return api_response(ResponseCode.BAD_REQUEST, '部分关联失败', errors)
         else:
-            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+            return api_response(ResponseCode.SUCCESS, '批量关联成功', saved_data)
 
     def delete(self, request):
         """delete 批量删除试卷-试题信息
