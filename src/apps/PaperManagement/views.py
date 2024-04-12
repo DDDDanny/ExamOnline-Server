@@ -266,32 +266,19 @@ class PaperQuetionsView(APIView):
         else:
             return api_response(ResponseCode.SUCCESS, '批量关联成功', saved_data)
 
-    def delete(self, request):
-        """delete 批量删除试卷-试题信息
+    def delete(self, _, **kwargs):
+        """delete 试卷取消关联试题信息
         Args:
-            request (Object): ids试题IDs，列表类型
+            id (String): 试题关联id
         """
-        questions_ids = request.data.get('ids')
-        # 存放即将删除的试题IDs
-        to_delete_ids = []
-        # 存放不存在的试题IDs
-        not_exists_ids = []
-        # 循环遍历试题ID，判断是否存在
-        for q_id in questions_ids:
-            if PaperQuestions.objects.filter(id=q_id).exists():
-                to_delete_ids.append(q_id)
-            else:
-                not_exists_ids.append(q_id)
-        if len(to_delete_ids) == 0:
-            return api_response(ResponseCode.SUCCESS, '没有可以删除试题！', { 'notExistsQuestions': not_exists_ids })
-        else:
-            # 根据试题ID获取试题实体
-            to_delete_instance = PaperQuestions.objects.filter(id__in=to_delete_ids)
-            to_delete_instance.delete()
-            if len(not_exists_ids) > 0:
-                return api_response(ResponseCode.SUCCESS, '删除试题成功！但有不存在的试题ID', { 'notExistsQuestions': not_exists_ids })
-            else:
-                return api_response(ResponseCode.SUCCESS, '删除试题成功!')
+        try:
+            paper_question_instance = PaperQuestions.objects.get(id=kwargs['id'])
+        except PaperQuestions.DoesNotExist:
+            return api_response(ResponseCode.NOT_FOUND, '关联关系不存在，取消关联失败！')
+        # 在这里添加逻辑删除的代码
+        paper_question_instance.delete()
+        # 返回成功响应
+        return api_response(ResponseCode.SUCCESS, '取消关联成功！')
 
     def put(self, request, **kwargs):
         """put 编辑试卷-试题信息
