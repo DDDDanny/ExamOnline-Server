@@ -250,7 +250,7 @@ class PaperQuetionsView(APIView):
         Args:
             request (Object): 请求参数
         """
-        serializers = [PaperQuestionsSerializer(data=item) for item in request.data]
+        serializers = [PaperQuestionsSerializer(data=item) for item in request.data['questions_info']]
         # 如果有任何一个序列化器的数据无效，则收集错误，并返回部分创建失败的响应。
         errors = []
         # 如果所有序列化器的数据都有效，则返回成功的响应，并包含创建成功的数据列表。
