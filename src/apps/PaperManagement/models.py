@@ -53,7 +53,7 @@ class PaperQuestions(models.Model):
     # 试题顺序
     sequence_number = models.PositiveIntegerField(default=1, help_text='试题顺序')
     # 试题分数
-    marks = models.PositiveIntegerField(default=5, help_text='试题分数')
+    marks = models.FloatField(default=5, help_text='试题分数')
     # 所属模块
     module = models.CharField(max_length=255, help_text='所属模块')
     # 创建时间
