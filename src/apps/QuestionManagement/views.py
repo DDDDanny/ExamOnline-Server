@@ -353,16 +353,21 @@ class QuestionsWarehouseForPaper(APIView):
         """get 获取试题信息（ 用于试卷题库 ）
         Args:
             request (Object): 请求参数
+        Desc:
+            返回个人题库中有效且未被删除的试题以及收藏的公共试题
         """
         user_id = request.query_params.get('user_id', None)
-        # 获取需要编辑的试卷-模块实例（进行排序）
+        # 获取操作者的收藏试题
+        favorite_questions_instance = QuestionsFavorite.objects.filter(collector=user_id).values_list('question_id', flat=True)
+        favorite_questions_ids = [str(item) for item in list(favorite_questions_instance)]
+        # 获取操作者相关题库实例
         questions_instance = Questions.objects.filter(
             status=True, is_deleted=False).filter(
-                Q(created_user=user_id) | Q(trial_type='public')).order_by('created_at')
+                Q(created_user=user_id) | Q(id__in = favorite_questions_ids)).order_by('created_at')
         serializer = QuestionSerializer(questions_instance, many=True)
         data = Response(serializer.data)
         return api_response(ResponseCode.SUCCESS, '获取题库试题成功！', data.data)
-    
-    
+
+
 if __name__ == '__main__':
     pass
