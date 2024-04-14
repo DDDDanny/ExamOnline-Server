@@ -250,7 +250,13 @@ class PaperQuetionsView(APIView):
         Args:
             request (Object): 请求参数
         """
-        serializers = [PaperQuestionsSerializer(data=item) for item in request.data['questions_info']]
+        link_questions = request.data['questions_info']
+        # 已经关联的试题
+        linked_questions = PaperQuestions.objects.filter(paper_id=link_questions[0]['paper_id'], module=link_questions[0]['module'])
+        # 进行排序
+        for (index, item) in enumerate(link_questions):
+            item['sequence_number'] = len(linked_questions) + index + 1
+        serializers = [PaperQuestionsSerializer(data=item) for item in link_questions]
         # 如果有任何一个序列化器的数据无效，则收集错误，并返回部分创建失败的响应。
         errors = []
         # 如果所有序列化器的数据都有效，则返回成功的响应，并包含创建成功的数据列表。
