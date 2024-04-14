@@ -279,10 +279,19 @@ class PaperQuetionsView(APIView):
         """
         try:
             paper_question_instance = PaperQuestions.objects.get(id=kwargs['id'])
+            # 获取试卷ID和模块ID
+            paper_id = paper_question_instance.paper_id
+            module = paper_question_instance.module
         except PaperQuestions.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '关联关系不存在，取消关联失败！')
         # 在这里添加逻辑删除的代码
         paper_question_instance.delete()
+        # 重新排序
+        linked_questions_instance = list(PaperQuestions.objects.filter(paper_id=paper_id, module=module).order_by('sequence_number'))
+        # 进行排序
+        for (index, item) in enumerate(linked_questions_instance):
+            item.sequence_number = index + 1
+            item.save()
         # 返回成功响应
         return api_response(ResponseCode.SUCCESS, '取消关联成功！')
 
