@@ -337,6 +337,28 @@ class PaperQuetionsView(APIView):
         return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
 
 
+class PaperQuestionsSortView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        """put 更新试卷-试题顺序
+        Args:
+            request (Object): link_questions: []
+        """
+        instance_suites = []
+        for item in request.data['link_questions']:
+            try:
+                paper_question_instance = PaperQuestions.objects.get(id=item['id'])
+                paper_question_instance.sequence_number = item['index']
+                instance_suites.append(paper_question_instance)
+            except Exception:
+                return api_response(ResponseCode.NOT_FOUND, '调整顺序失败！试卷不存在，无法进行调整！')
+        # 批量更新
+        PaperQuestions.objects.bulk_update(instance_suites, ['sequence_number'])
+        return api_response(ResponseCode.SUCCESS, '试卷重新排序成功！')
+
+
 class PaperCopyView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
