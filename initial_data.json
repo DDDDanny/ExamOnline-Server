@@ -115,7 +115,7 @@
             "code": "10004",
             "name": "考试管理",
             "is_show": "Teacher",
-            "path": "/exam",
+            "path": "/examManagement",
             "order": 4,
             "parent_code": "0"
         }
