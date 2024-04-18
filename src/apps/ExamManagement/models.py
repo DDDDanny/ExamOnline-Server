@@ -18,9 +18,9 @@ class Exam(models.Model):
     # 绑定试卷ID
     paper_id = models.CharField(max_length=255, help_text='绑定试卷ID')
     # 考试名称
-    title = models.CharField(max_length=100, help_text='试卷标题')
+    title = models.CharField(max_length=100, help_text='考试名称')
     # 考试描述
-    description = models.TextField(blank=True, null=True, help_text='试卷描述')
+    description = models.TextField(blank=True, null=True, help_text='考试描述')
     # 考试开始时间
     start_time = models.DateTimeField(verbose_name='考试开始时间')
     # 考试结束时间
