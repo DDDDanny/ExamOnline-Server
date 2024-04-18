@@ -80,6 +80,7 @@ class ExamBaseView(APIView):
             'title': 'title__icontains',  # 模糊查询
             'is_published': 'is_published',
             'is_deleted': 'is_deleted',
+            'created_user': 'created_user',
             # 添加其他查询参数和字段的映射
         }
         # 构建查询条件的字典
