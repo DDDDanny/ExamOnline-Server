@@ -20,6 +20,9 @@ class ExamSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'created_at': { 'format': '%Y-%m-%d %H:%M:%S' },
             'updated_at': { 'format': '%Y-%m-%d %H:%M:%S' },
+            'publish_date': { 'format': '%Y-%m-%d %H:%M:%S' },
+            'start_time': { 'format': '%Y-%m-%d %H:%M:%S' },
+            'end_time': { 'format': '%Y-%m-%d %H:%M:%S' },
         }
 
 
