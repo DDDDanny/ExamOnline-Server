@@ -7,6 +7,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Exam
 from .serializers import ExamSerializer
@@ -85,15 +86,22 @@ class ExamBaseView(APIView):
         filters = {}
         for param, field in query_params_mapping.items():
             value = request.query_params.get(param, None)
-            if value is not None:
-                filters[field] = value
+            if value is not None and value != '':
+                if field == 'is_published' or field == 'is_deleted':
+                    filters[field] = True if value.lower() == 'true' else False
+                else:
+                    filters[field] = value
         # 执行查询
-        queryset = Exam.objects.filter(**filters)
+        queryset = Exam.objects.filter(**filters).order_by('-created_at')
+        # 实例化分页器并配置参数
+        paginator = PageNumberPagination()
+        paginator.page_size = int(request.query_params.get('pageSize', 50))
+        paginator.page_query_param = 'currentPage'
+        # 进行分页处理
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
         # 序列化考试数据
-        serializer = ExamSerializer(queryset, many=True)
-        # 返回序列化后的数据
-        data = Response(serializer.data)
-        resp = { 'total': len(data.data), 'data': data.data }
+        serializer = ExamSerializer(paginated_queryset, many=True)
+        resp = { 'total': len(queryset), 'data': serializer.data }
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
