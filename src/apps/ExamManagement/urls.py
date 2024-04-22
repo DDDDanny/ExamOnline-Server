@@ -6,10 +6,11 @@
 
 from django.urls import path
 
-from .views import ExamBaseView
+from .views import ExamBaseView, ExamPublishView
 
 
 urlpatterns = [
      path('exam', ExamBaseView.as_view(), name='ExamOpts'),
-     path('exam/<str:id>', ExamBaseView.as_view(), name='ExamOpts')
+     path('exam/<str:id>', ExamBaseView.as_view(), name='ExamOpts'),
+     path('examPublish/<str:id>', ExamPublishView.as_view(), name='ExamPublishOpts')
 ]
