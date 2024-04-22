@@ -19,8 +19,6 @@ class Exam(models.Model):
     paper_id = models.CharField(max_length=255, help_text='绑定试卷ID')
     # 考试名称
     title = models.CharField(max_length=100, help_text='考试名称')
-    # 考试描述
-    description = models.TextField(blank=True, null=True, help_text='考试描述')
     # 考试开始时间
     start_time = models.DateTimeField(verbose_name='考试开始时间')
     # 考试结束时间
@@ -33,6 +31,8 @@ class Exam(models.Model):
     publish_date = models.DateTimeField(null=True, blank=True, verbose_name='发布时间')
     # 是否删除
     is_deleted = models.BooleanField(default=False, help_text='是否删除')
+    # 备注
+    remark = models.TextField(blank=True, null=True, help_text='备注')
     # 创建人
     created_user = models.CharField(max_length=255, help_text='创建人')
     # 创建时间
