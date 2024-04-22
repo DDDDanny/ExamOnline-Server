@@ -4,6 +4,8 @@
 # @File    : views.py
 # @Describe: Exam应用视图层
 
+from datetime import datetime
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -104,6 +106,41 @@ class ExamBaseView(APIView):
         serializer = ExamSerializer(paginated_queryset, many=True)
         resp = { 'total': len(queryset), 'data': serializer.data }
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
+class ExamPublishView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, _, **kwargs):
+        """post 发布考试
+        Args:
+            id: 考试ID
+        """
+        try:
+            exam_instance = Exam.objects.get(id=kwargs['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '取消发布失败！考试不存在，请刷新后重新操作！')
+        # 更新字段
+        exam_instance.is_published = True
+        exam_instance.publish_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        exam_instance.save()
+        return api_response(ResponseCode.SUCCESS, '取消发布成功')
+    
+    def delete(self, _, **kwargs):
+        """delete 取消发布
+        Args:
+            id: 考试ID
+        """
+        try:
+            exam_instance = Exam.objects.get(id=kwargs['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '取消发布失败！考试不存在，请刷新后重新操作！')
+        # 更新字段
+        exam_instance.is_published = False
+        exam_instance.publish_date = None
+        exam_instance.save()
+        return api_response(ResponseCode.SUCCESS, '取消发布成功')
 
 
 if __name__ == '__main__':
