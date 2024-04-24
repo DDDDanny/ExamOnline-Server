@@ -6,7 +6,7 @@
 
 from datetime import datetime
 
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.forms.models import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -460,6 +460,27 @@ class PaperPublishView(APIView):
         paper.save()
         return api_response(ResponseCode.SUCCESS, '取消发布成功')
     
+
+class PaperForSelectorView(APIView):
+    
+    def get(self, request):
+        """get 查询试卷列表信息（用于选择器）
+        Args:
+            request (Object): 请求参数
+        """
+        user_id = request.query_params.get('user_id', None)
+        # 执行查询
+        queryset = Paper.objects.filter(is_published=True).filter(Q(created_user=user_id) | Q(is_public=True)).order_by('-created_at')
+        # 序列化试题数据
+        serializer = PaperSerializer(queryset, many=True)
+        # 计算实际总分
+        for item in serializer.data:
+            result = PaperQuestions.objects.filter(paper_id=item['id']).aggregate(actual_total=Sum('marks'))
+            item['actual_total'] = result['actual_total']
+        resp = { 'total': len(queryset), 'data': serializer.data }
+        return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+    
+
 
 if __name__ == '__main__':
     pass
