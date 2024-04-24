@@ -9,7 +9,7 @@ from django.urls import path
 from .views import PaperBaseView
 from .views import PaperModuleView, PaperModuleSortView
 from .views import PaperQuetionsView, PaperQuestionsSortView
-from .views import PaperCopyView, PaperPublishView
+from .views import PaperCopyView, PaperPublishView, PaperForSelectorView
 
 
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     path('paperPublish', PaperPublishView.as_view(), name='PaperPublishOpts'),
     path('paperModuleSort', PaperModuleSortView.as_view(), name='PaperModuleSortOpts'),
     path('paperQuestionsSort', PaperQuestionsSortView.as_view(), name='PaperQuestionsSortOpts'),
+    path('paperForSelector', PaperForSelectorView.as_view(), name='PaperForSelectorOpts'),
 ]
