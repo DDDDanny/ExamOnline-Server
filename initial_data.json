@@ -49,7 +49,7 @@
             "code": "10007",
             "name": "教师管理",
             "is_show": "Admin",
-            "path": "/teacher",
+            "path": "/teachersManagement",
             "order": 7,
             "parent_code": "0"
         }
@@ -93,7 +93,7 @@
             "code": "10006",
             "name": "学生管理",
             "is_show": "Teacher",
-            "path": "/student",
+            "path": "/studentsManagement",
             "order": 6,
             "parent_code": "0"
         }
