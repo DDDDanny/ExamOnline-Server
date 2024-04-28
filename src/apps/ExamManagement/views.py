@@ -58,6 +58,10 @@ class ExamBaseView(APIView):
         try:
             # 获取需要编辑的试卷实例
             exam_instance = Exam.objects.get(id=kwargs['id'])
+            # 删除不需要的参数
+            del request.data['updated_at'], request.data['created_at'], request.data['id']
+            del request.data['start_datetime'], request.data['end_datetime']
+            del request.data['exam_date'], request.data['exam_status']
         except Exam.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '编辑失败！考试不存在，无法进行编辑！')
         serializer = ExamSerializer(exam_instance, request.data)
