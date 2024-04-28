@@ -27,6 +27,8 @@ class StudentLoginView(APIView):
             user = Student.objects.get(username=username)
         except Exception:
             return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
+        if user.is_active is False:
+            return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户没有激活！')
         if user.password == password:
             refresh = CustomRefreshToken.for_user(user)
             data = {
