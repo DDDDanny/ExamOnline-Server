@@ -7,6 +7,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
@@ -158,7 +159,7 @@ class BaseUserView(APIView):
             # 定义查询参数和它们对应的模型字段
             query_params_mapping = {
                 'username': 'username',
-                'name': 'name',
+                'name': 'name__icontains',  # 模糊搜索
                 'gender': 'gender',
                 'is_deleted': 'is_deleted',
                 'is_active': 'is_active'
@@ -168,15 +169,22 @@ class BaseUserView(APIView):
             filters = {}
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
-                if value is not None:
-                    filters[field] = value
+                if value is not None and value != '':
+                    if field == 'is_active' or field == 'is_deleted':
+                        filters[field] = True if value.lower() == 'true' else False
+                    else:
+                        filters[field] = value
             # 执行查询
-            queryset = self.model.objects.filter(**filters)
+            queryset = self.model.objects.filter(**filters).order_by('name')
+            # 实例化分页器并配置参数
+            paginator = PageNumberPagination()
+            paginator.page_size = int(request.query_params.get('pageSize', 50))
+            paginator.page_query_param = 'currentPage'
+            # 进行分页处理
+            paginated_queryset = paginator.paginate_queryset(queryset, request)
             # 序列化用户数据
-            serializer = self.model_serializer(queryset, many=True)
-            # 返回序列化后的数据
-            data = Response(serializer.data)
-            resp = { 'total': len(data.data), 'data': data.data }
+            serializer = self.model_serializer(paginated_queryset, many=True)
+            resp = { 'total': len(queryset), 'data': serializer.data }
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
