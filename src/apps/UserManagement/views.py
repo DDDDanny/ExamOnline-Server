@@ -97,7 +97,7 @@ class BaseUserView(APIView):
             return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
         else:
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
-            return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
+            return api_response(ResponseCode.BAD_REQUEST, '数据冲突或缺失！创建失败！请重新填写！', serializer.errors)
 
     def put(self, request):
         """put 编辑用户信息接口
