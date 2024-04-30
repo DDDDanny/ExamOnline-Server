@@ -163,6 +163,8 @@ class BaseUserView(APIView):
             query_params_mapping = {
                 'username': 'username',
                 'name': 'name__icontains',  # 模糊搜索
+                'student_id': 'student_id__icontains',  # 模糊搜索
+                'teacher_id': 'teacher_id__icontains',  # 模糊搜索
                 'gender': 'gender',
                 'is_deleted': 'is_deleted',
                 'is_active': 'is_active'
