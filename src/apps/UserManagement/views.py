@@ -124,15 +124,14 @@ class BaseUserView(APIView):
             # 返回错误响应，包含验证错误和 HTTP 400 Bad Request 状态
             return api_response(ResponseCode.BAD_REQUEST, '编辑失败! 存在校验失败的字段！', serializer.error_messages)
 
-    def delete(self, request):
+    def delete(self, _, **kwargs):
         """delete 删除用户信息接口
         Args:
             request (Object): 请求参数
         """
-        # 获取要删除的用户实例
-        user_id = request.data.get('id')
         try:
-            user_instance = self.model.objects.get(id=user_id)
+            # 获取要删除的用户实例
+            user_instance = self.model.objects.get(id=kwargs['id'])
         except self.model.DoesNotExist:
             # 用户不存在，返回错误响应和 HTTP 404 Not Found 状态
             return api_response(ResponseCode.NOT_FOUND, '用户不存在，无法删除！')
