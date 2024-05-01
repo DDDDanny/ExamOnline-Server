@@ -20,7 +20,8 @@ class RequestInterceptorMiddleware:
         
         # 处理响应后的逻辑
         if response.status_code == 200:
-            self.log_response_body(response)
+            if 'download' not in request.path:
+                self.log_response_body(response)
         else:
             if response.status_code in [401, 403]:
                 return api_response(ResponseCode.UNAUTHORIZED, '无权限或Token失效！请重新登录！')
