@@ -25,4 +25,5 @@ urlpatterns = [
     path("api/", include("src.apps.ExamManagement.urls")),
     path("api/", include("src.apps.ExamResult.urls")),
     path("api/", include("src.apps.MenuManagement.urls")),
+    path("api/", include("src.apps.Common.urls")),
 ]
