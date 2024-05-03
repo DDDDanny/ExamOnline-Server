@@ -32,9 +32,9 @@ class User(models.Model):
     # 是否删除
     is_deleted = models.BooleanField(default=False, help_text='是否删除')
     # 电话
-    phone = models.CharField(max_length=20, null=True, help_text='电话号码')
+    phone = models.CharField(max_length=20, null=True, blank=True, help_text='电话号码')
     # Email
-    email = models.CharField(max_length=255, null=True, help_text='邮箱账号')
+    email = models.CharField(max_length=255, null=True, blank=True, help_text='邮箱账号')
     # 创建时间
     created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
     # 更新时间
