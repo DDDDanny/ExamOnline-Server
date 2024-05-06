@@ -4,6 +4,8 @@
 # @File    : views.py
 # @Describe: User相关视图 
 
+import warnings
+import pandas as pd
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -13,6 +15,10 @@ from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
 from src.middleware.authentication import CustomRefreshToken
 from src.utils.response_utils import ResponseCode, api_response
+
+
+# 忽略openpyxl的警告
+warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 
 class StudentLoginView(APIView):
@@ -262,6 +268,20 @@ class StudentChangePasswordView(ChangePasswordBaseView):
 class TeacherChangePasswordView(ChangePasswordBaseView):
     model_serializer = TeacherSerializer
     model = Teacher
+
+
+class UploadFileForStudentView(APIView):
+    def post(self, request):
+        if 'StudentTemplateFile' in request.FILES:
+            excel_file = request.FILES['StudentTemplateFile']
+            try:
+                df = pd.read_excel(excel_file)
+                # 在这里可以对读取的数据进行处理
+                return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功')
+            except Exception as e:
+                return api_response(ResponseCode.BAD_REQUEST, str(e))
+        else:
+            return api_response(ResponseCode.INTERNAL_SERVER_ERROR, str(e))
 
 
 if __name__ == '__main__':
