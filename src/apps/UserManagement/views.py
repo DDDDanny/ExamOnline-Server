@@ -6,11 +6,14 @@
 
 import warnings
 import pandas as pd
+import numpy as np
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
+from src.utils.mapping_table import UPLOAD_STUDENT_MAPPING_TABLE
+from src.utils.mapping_table import translate_fields
 from .models import Student, Teacher
 from .serializers import StudentSerializer, TeacherSerializer
 from src.middleware.authentication import CustomRefreshToken
@@ -271,17 +274,47 @@ class TeacherChangePasswordView(ChangePasswordBaseView):
 
 
 class UploadFileForStudentView(APIView):
+    
+    def __analysis_data(self, data):
+        """__analysis_data 导入数据解析
+        Returns:
+            tuple: success_list: list, fail_list: list
+        """
+        success_list = []
+        fail_list = []
+        for item in data:
+            required_keys = ['student_id', 'name', 'gender', 'is_active']
+            # 使用any()函数，如果任何一个键的值为None或'<NA>'，学生数据就放入失败组
+            if any(item.get(key) is None for key in required_keys):
+                fail_list.append(item)
+            else:
+                # 进行数据处理后，将数据放到成功组
+                item['username'] = item['username'] if item['username'] is not None else item['student_id']
+                item['password'] = item['password'] if item['password'] is not None else '123456'
+                success_list.append(item)
+        return success_list, fail_list
+                
+
     def post(self, request):
         if 'StudentTemplateFile' in request.FILES:
             excel_file = request.FILES['StudentTemplateFile']
             try:
+                # 导入并清洗数据
                 df = pd.read_excel(excel_file)
-                # 在这里可以对读取的数据进行处理
-                return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功')
-            except Exception as e:
-                return api_response(ResponseCode.BAD_REQUEST, str(e))
+                df = df.replace(np.NAN, None, regex=True)
+                df['学号'] = df['学号'].astype('Int32')
+                # 数据转换
+                list_of_dicts = df.to_dict('records')
+                translated_data = [translate_fields(record, UPLOAD_STUDENT_MAPPING_TABLE) for record in list_of_dicts]
+                # 数据解析处理
+                success, fail = self.__analysis_data(translated_data)
+                print(success)
+                print(fail)
+                return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功', { 'success_list': success, 'fail_list': fail })
+            except Exception:
+                return api_response(ResponseCode.BAD_REQUEST, '解析失败！存在错误信息！')
         else:
-            return api_response(ResponseCode.INTERNAL_SERVER_ERROR, str(e))
+            return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
 
 
 if __name__ == '__main__':
