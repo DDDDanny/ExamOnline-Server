@@ -10,6 +10,7 @@ from .views import StudentBatchActivationView
 from .views import StudentUserView, TeacherUserView
 from .views import StudentLoginView, TeacherLoginView
 from .views import StudentChangePasswordView, TeacherChangePasswordView
+from .views import UploadFileForStudentView
 
 urlpatterns = [
     path('student', StudentUserView.as_view(), name='StudentOpts'),
@@ -21,6 +22,7 @@ urlpatterns = [
     path('studentBatchActivation', StudentBatchActivationView.as_view(), name='StudentBatchActivation'),
     path('studentChangePassword/<str:user_id>', StudentChangePasswordView.as_view(), name='StudentChangePassword'),
     path('teacherChangePassword/<str:user_id>', TeacherChangePasswordView.as_view(), name='TeacherChangePassword'),
+    path('uploadFileForStudent', UploadFileForStudentView.as_view(), name='UploadFileForStudent'),
 ]
 
 
