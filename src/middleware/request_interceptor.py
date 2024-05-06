@@ -16,6 +16,10 @@ class RequestInterceptorMiddleware:
         # 处理请求前的逻辑
         self.log_request_body(request)
 
+        # 如果请求路径中包含 'upload'，则直接调用下一个中间件或视图函数
+        if 'upload' in request.path:
+            return self.get_response(request)
+
         response = self.get_response(request)
         
         # 处理响应后的逻辑
@@ -34,8 +38,15 @@ class RequestInterceptorMiddleware:
         log_common(f'【{request.method}】 {request.path}')
         if request.method == 'GET':
             log_request(request.GET)
+        elif request.body and not request.FILES:  # 检查请求体是否非空且不是文件上传
+            try:
+                # 尝试解码UTF-8编码的请求体
+                log_request(request.body.decode('utf-8'))
+            except UnicodeDecodeError:
+                # 如果解码失败，说明请求体是二进制数据，直接打印字节串
+                log_request(request.body)
         else:
-            log_request(request.body.decode('utf-8'))
+            log_request('文件上传请求')
 
     # 打印响应体日志信息
     def log_response_body(self, response):
