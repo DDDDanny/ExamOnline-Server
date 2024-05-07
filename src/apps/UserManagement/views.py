@@ -280,8 +280,7 @@ class UploadFileForStudentView(APIView):
         Returns:
             tuple: success_list: list, fail_list: list
         """
-        success_list = []
-        fail_list = []
+        success_list, fail_list = [], []
         for item in data:
             required_keys = ['student_id', 'name', 'gender', 'is_active']
             # 使用any()函数，如果任何一个键的值为None或'<NA>'，学生数据就放入失败组
@@ -289,9 +288,16 @@ class UploadFileForStudentView(APIView):
                 fail_list.append(item)
             else:
                 # 进行数据处理后，将数据放到成功组
-                item['username'] = item['username'] if item['username'] is not None else item['student_id']
-                item['password'] = item['password'] if item['password'] is not None else '123456'
-                success_list.append(item)
+                student_instance = Student()
+                student_instance.student_id = item['student_id']
+                student_instance.name = item['name']
+                student_instance.username = item['username'] if item['username'] is not None else item['student_id']
+                student_instance.password = item['password'] if item['password'] is not None else '123456'
+                student_instance.gender = 'male' if item['gender'] == '男' else 'female'
+                student_instance.is_active = True if item['is_active'] == '是' else False
+                student_instance.phone = item['phone'] if item['phone'] is not None else ''
+                student_instance.email = item['email'] if item['email'] is not None else ''
+                success_list.append(student_instance)
         return success_list, fail_list
                 
 
@@ -308,10 +314,15 @@ class UploadFileForStudentView(APIView):
                 translated_data = [translate_fields(record, UPLOAD_STUDENT_MAPPING_TABLE) for record in list_of_dicts]
                 # 数据解析处理
                 success, fail = self.__analysis_data(translated_data)
-                print(success)
-                print(fail)
-                return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功', { 'success_list': success, 'fail_list': fail })
-            except Exception:
+                if success:
+                    Student.objects.bulk_create(success)
+                    if fail:
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！部分新增成功！', {'fail_list': fail })
+                    else:
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！全部新增成功！')
+                else:
+                    return api_response(ResponseCode.BAD_REQUEST, 'Excel文件解析成功！全部新增失败！', {'fail_list': fail })
+            except Exception as e:
                 return api_response(ResponseCode.BAD_REQUEST, '解析失败！存在错误信息！')
         else:
             return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
