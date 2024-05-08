@@ -317,13 +317,13 @@ class UploadFileForStudentView(APIView):
                 if success:
                     Student.objects.bulk_create(success)
                     if fail:
-                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！部分新增成功！', {'fail_list': fail })
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！部分新增成功！', { 'fail_list': fail })
                     else:
-                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！全部新增成功！')
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！全部新增成功！', { 'fail_list': fail })
                 else:
-                    return api_response(ResponseCode.BAD_REQUEST, 'Excel文件解析成功！全部新增失败！', {'fail_list': fail })
+                    return api_response(ResponseCode.BAD_REQUEST, 'Excel文件解析成功！全部新增失败！', { 'fail_list': fail })
             except Exception as e:
-                return api_response(ResponseCode.BAD_REQUEST, '解析失败！存在错误信息！')
+                return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '解析失败！存在错误信息！')
         else:
             return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
 
