@@ -309,8 +309,12 @@ class UploadFileForStudentView(APIView):
                 df = pd.read_excel(excel_file)
                 df = df.replace(np.NAN, None, regex=True)
                 df['学号'] = df['学号'].astype('Int32')
-                # 数据转换
-                list_of_dicts = df.to_dict('records')
+                # 数据转换，为每个字典添加一个 'row_number' 键
+                list_of_dicts = []
+                for index, row in df.iterrows():
+                    row_dict = row.to_dict()
+                    row_dict['row_number'] = index
+                    list_of_dicts.append(row_dict)
                 translated_data = [translate_fields(record, UPLOAD_STUDENT_MAPPING_TABLE) for record in list_of_dicts]
                 # 数据解析处理
                 success, fail = self.__analysis_data(translated_data)
