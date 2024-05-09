@@ -308,7 +308,7 @@ class UploadFileForStudentView(APIView):
                 # 导入并清洗数据
                 df = pd.read_excel(excel_file)
                 df = df.replace(np.NAN, None, regex=True)
-                df['学号'] = df['学号'].astype('Int32')
+                # df['学号'] = df['学号'].astype('Int32')
                 # 数据转换，为每个字典添加一个 'row_number' 键
                 list_of_dicts = []
                 for index, row in df.iterrows():
@@ -327,7 +327,7 @@ class UploadFileForStudentView(APIView):
                 else:
                     return api_response(ResponseCode.BAD_REQUEST, 'Excel文件解析成功！全部新增失败！', { 'fail_list': fail })
             except Exception as e:
-                return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '解析失败！存在错误信息！')
+                return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '解析失败！存在错误信息！请检查单元格类型和必填信息！')
         else:
             return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
 
