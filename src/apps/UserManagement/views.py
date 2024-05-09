@@ -191,7 +191,7 @@ class BaseUserView(APIView):
                     else:
                         filters[field] = value
             # 执行查询
-            queryset = self.model.objects.filter(**filters).order_by('name')
+            queryset = self.model.objects.filter(**filters).order_by('-created_at')
             # 实例化分页器并配置参数
             paginator = PageNumberPagination()
             paginator.page_size = int(request.query_params.get('pageSize', 50))
