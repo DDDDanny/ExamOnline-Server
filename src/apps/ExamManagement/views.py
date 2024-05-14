@@ -98,8 +98,13 @@ class ExamBaseView(APIView):
                     filters[field] = True if value.lower() == 'true' else False
                 else:
                     filters[field] = value
-        # 执行查询
-        queryset = Exam.objects.filter(**filters).order_by('-created_at')
+        current_time = request.query_params.get('current_time', None)
+        if current_time is not None and current_time != '':
+            # 执行查询（用于查询考试成绩）
+            queryset = Exam.objects.filter(**filters).filter(end_time__lt=current_time).order_by('-created_at')
+        else:
+            # 执行查询
+            queryset = Exam.objects.filter(**filters).order_by('-created_at')
         # 实例化分页器并配置参数
         paginator = PageNumberPagination()
         paginator.page_size = int(request.query_params.get('pageSize', 50))
