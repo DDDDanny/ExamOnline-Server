@@ -103,7 +103,9 @@ class ExamResultBaseView(APIView):
             # 定义查询参数和它们对应的模型字段
             query_params_mapping = {
                 'exam_id': 'exam_id',
-                'student_id': 'student_id',
+                'student_id': 'student_id__icontains',
+                'name': 'name__icontains',
+                'result_mark': 'result_mark'
                 # 添加其他查询参数和字段的映射
             }
             # 构建查询条件的字典
@@ -113,7 +115,7 @@ class ExamResultBaseView(APIView):
                 if value is not None:
                     filters[field] = value
             # 执行查询
-            queryset = ExamResult.objects.filter(**filters)
+            queryset = ExamResult.objects.filter(**filters).order_by('-result_mark')
             # 序列化试题数据
             serializer = ExamResultSerializer(queryset, many=True)
             # 返回序列化后的数据
