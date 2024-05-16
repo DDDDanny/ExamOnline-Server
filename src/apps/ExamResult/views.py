@@ -112,7 +112,7 @@ class ExamResultBaseView(APIView):
             filters = {}
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
-                if value is not None:
+                if value is not None and value != '':
                     filters[field] = value
             # 执行查询
             queryset = ExamResult.objects.filter(**filters).order_by('-result_mark')
