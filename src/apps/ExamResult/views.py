@@ -103,8 +103,6 @@ class ExamResultBaseView(APIView):
             # 定义查询参数和它们对应的模型字段
             query_params_mapping = {
                 'exam_id': 'exam_id',
-                'student_id': 'student_id__icontains',
-                'name': 'name__icontains',
                 'result_mark': 'result_mark'
                 # 添加其他查询参数和字段的映射
             }
@@ -118,8 +116,25 @@ class ExamResultBaseView(APIView):
             queryset = ExamResult.objects.filter(**filters).order_by('-result_mark')
             # 序列化试题数据
             serializer = ExamResultSerializer(queryset, many=True)
+            serializer_data = serializer.data
+            # 获取查询参数
+            filter_stu_id = request.query_params.get('student_id', None)
+            filter_stu_name = request.query_params.get('name', None)
+            # 二次筛选
+            if filter_stu_id is not None or filter_stu_name is not None:
+                filter_stu_id = filter_stu_id.strip() if filter_stu_id else None
+                filter_stu_name = filter_stu_name.strip() if filter_stu_name else None
+
+                def filter_item(item):
+                    if filter_stu_id and filter_stu_id not in item['student_info']['student_id']:
+                        return False
+                    if filter_stu_name and filter_stu_name not in item['student_info']['name']:
+                        return False
+                    return True
+
+                serializer_data = [item for item in serializer_data if filter_item(item)]
             # 返回序列化后的数据
-            data = Response(serializer.data)
+            data = Response(serializer_data)
             resp = { 'total': len(data.data), 'data': data.data }
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
