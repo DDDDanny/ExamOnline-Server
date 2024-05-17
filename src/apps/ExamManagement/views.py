@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
 from .models import Exam
+from ..ExamResult.models import ExamResult
 from .serializers import ExamSerializer
 from src.utils.response_utils import ResponseCode, api_response
 
@@ -129,7 +130,11 @@ class ExamPublishView(APIView):
         try:
             exam_instance = Exam.objects.get(id=kwargs['id'])
         except Exception:
-            return api_response(ResponseCode.BAD_REQUEST, '取消发布失败！考试不存在，请刷新后重新操作！')
+            return api_response(ResponseCode.BAD_REQUEST, '发布失败！考试不存在，请刷新后重新操作！')
+        # 获取关联的考生信息
+        associated_students = ExamResult.objects.filter(exam_id=kwargs['id'])
+        if len(associated_students) == 0:
+            return api_response(ResponseCode.BAD_REQUEST, '发布失败！未关联考生，请关联后重新操作！')
         # 更新字段
         exam_instance.is_published = True
         exam_instance.publish_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
