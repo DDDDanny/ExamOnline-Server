@@ -32,9 +32,16 @@ class ExamResultBaseView(APIView):
                 exam_result_list.append({
                     'exam_id': request.data['exam_id'],
                     'student_id': s_id
-                })   
+                })
             serializer = ExamResultSerializer(data=exam_result_list, many=True)
             if serializer.is_valid():
+                # 如果新数据校验通过，对老数据进行删除操作
+                old_data = ExamResult.objects.filter(exam_id=request.data['exam_id'])
+                old_data_length = len(old_data)
+                deleted_count, _ = old_data.delete()
+                if deleted_count != old_data_length:
+                    return api_response(ResponseCode.BAD_REQUEST, '创建失败！数据处理失败！', serializer.errors)
+                # 老数据删除后，新数据存储
                 serializer.save()
                 data = Response(serializer.data)
                 return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
