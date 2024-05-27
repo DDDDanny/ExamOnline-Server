@@ -157,5 +157,38 @@ class ExamPublishView(APIView):
         return api_response(ResponseCode.SUCCESS, '取消发布成功')
 
 
+class ExamScheduleView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """get 查询考试计划信息
+        Args:
+            request (Object): 请求参数
+        """
+        # 定义查询参数和它们对应的模型字段
+        query_params_mapping = {
+            'start_time': 'start_time__contains',  # 模糊查询
+            'is_published': 'is_published',
+            'is_deleted': 'is_deleted'
+            # 添加其他查询参数和字段的映射
+        }
+        # 构建查询条件的字典
+        filters = {}
+        for param, field in query_params_mapping.items():
+            value = request.query_params.get(param, None)
+            if value is not None and value != '':
+                if field == 'is_published' or field == 'is_deleted':
+                    filters[field] = True if value.lower() == 'true' else False
+                else:
+                    filters[field] = value
+        # 执行查询
+        queryset = Exam.objects.filter(**filters).order_by('start_time')
+        # 序列化考试数据
+        serializer = ExamSerializer(queryset, many=True)
+        resp = { 'total': len(queryset), 'data': serializer.data }
+        return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
 if __name__ == '__main__':
     pass
