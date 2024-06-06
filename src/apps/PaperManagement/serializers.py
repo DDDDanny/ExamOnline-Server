@@ -111,6 +111,7 @@ class PaperQuestionsSerializer(serializers.ModelSerializer):
                 'id': question_instance.id,
                 'topic': question_instance.topic, 
                 'type': question_instance.type,
+                'options': question_instance.options
                 # 可以再加需要的数据
             }
         else:
