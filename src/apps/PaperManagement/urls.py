@@ -10,7 +10,7 @@ from .views import PaperBaseView
 from .views import PaperModuleView, PaperModuleSortView
 from .views import PaperQuetionsView, PaperQuestionsSortView
 from .views import PaperCopyView, PaperPublishView, PaperForSelectorView
-
+from .views import PaperModuleQuestionView
 
 urlpatterns = [
     path('paper', PaperBaseView.as_view(), name='PaperOpts'),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('paperModuleSort', PaperModuleSortView.as_view(), name='PaperModuleSortOpts'),
     path('paperQuestionsSort', PaperQuestionsSortView.as_view(), name='PaperQuestionsSortOpts'),
     path('paperForSelector', PaperForSelectorView.as_view(), name='PaperForSelectorOpts'),
+    path('paperView/<str:id>', PaperModuleQuestionView.as_view(), name='PaperViewOpts'),
 ]
