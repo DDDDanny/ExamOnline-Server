@@ -105,13 +105,14 @@ class PaperBaseView(APIView):
                 'created_user': 'created_user',
                 # 添加其他查询参数和字段的映射
             }
-                # 构建查询条件的字典
+            # 构建查询条件的字典
             filters = {}
             for param, field in query_params_mapping.items():
                 value = request.query_params.get(param, None)
                 if value is not None and value != '':
                     if field == 'is_published' or field == 'is_deleted' or field == 'is_public':
-                        filters[field] = True if value.lower() == 'true' else False
+                        filters[field] = True if value.lower(
+                        ) == 'true' else False
                     else:
                         filters[field] = value
             # 执行查询
@@ -126,9 +127,10 @@ class PaperBaseView(APIView):
             serializer = PaperSerializer(paginated_queryset, many=True)
             # 计算实际总分
             for item in serializer.data:
-                result = PaperQuestions.objects.filter(paper_id=item['id']).aggregate(actual_total=Sum('marks'))
+                result = PaperQuestions.objects.filter(
+                    paper_id=item['id']).aggregate(actual_total=Sum('marks'))
                 item['actual_total'] = result['actual_total']
-            resp = { 'total': len(queryset), 'data': serializer.data }
+            resp = {'total': len(queryset), 'data': serializer.data}
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
@@ -167,7 +169,8 @@ class PaperModuleView(APIView):
             module_instance = PaperModule.objects.get(id=module_id)
         except PaperModule.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '模块不存在，删除失败')
-        paper_questions = PaperQuestions.objects.filter(paper_id=paper_id, module=module_id)
+        paper_questions = PaperQuestions.objects.filter(
+            paper_id=paper_id, module=module_id)
         if len(paper_questions) > 0:
             return api_response(ResponseCode.BAD_REQUEST, '该模块已关联试题，无法删除！')
         else:
@@ -221,7 +224,7 @@ class PaperModuleView(APIView):
 class PaperModuleSortView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    
+
     def put(self, request):
         """put 更新试卷-模块顺序
         Args:
@@ -237,7 +240,8 @@ class PaperModuleSortView(APIView):
             except Exception:
                 return api_response(ResponseCode.NOT_FOUND, '调整顺序失败！模块不存在，无法进行调整！')
         # 批量更新
-        PaperModule.objects.bulk_update(instance_suites, ['sequence_number', 'updated_user'])
+        PaperModule.objects.bulk_update(
+            instance_suites, ['sequence_number', 'updated_user'])
         return api_response(ResponseCode.SUCCESS, '模块重新排序成功！')
 
 
@@ -252,11 +256,13 @@ class PaperQuetionsView(APIView):
         """
         link_questions = request.data['questions_info']
         # 已经关联的试题
-        linked_questions = PaperQuestions.objects.filter(paper_id=link_questions[0]['paper_id'], module=link_questions[0]['module'])
+        linked_questions = PaperQuestions.objects.filter(
+            paper_id=link_questions[0]['paper_id'], module=link_questions[0]['module'])
         # 进行排序
         for (index, item) in enumerate(link_questions):
             item['sequence_number'] = len(linked_questions) + index + 1
-        serializers = [PaperQuestionsSerializer(data=item) for item in link_questions]
+        serializers = [PaperQuestionsSerializer(
+            data=item) for item in link_questions]
         # 如果有任何一个序列化器的数据无效，则收集错误，并返回部分创建失败的响应。
         errors = []
         # 如果所有序列化器的数据都有效，则返回成功的响应，并包含创建成功的数据列表。
@@ -278,7 +284,8 @@ class PaperQuetionsView(APIView):
             id (String): 试题关联id
         """
         try:
-            paper_question_instance = PaperQuestions.objects.get(id=kwargs['id'])
+            paper_question_instance = PaperQuestions.objects.get(
+                id=kwargs['id'])
             # 获取试卷ID和模块ID
             paper_id = paper_question_instance.paper_id
             module = paper_question_instance.module
@@ -287,7 +294,8 @@ class PaperQuetionsView(APIView):
         # 在这里添加逻辑删除的代码
         paper_question_instance.delete()
         # 重新排序
-        linked_questions_instance = list(PaperQuestions.objects.filter(paper_id=paper_id, module=module).order_by('sequence_number'))
+        linked_questions_instance = list(PaperQuestions.objects.filter(
+            paper_id=paper_id, module=module).order_by('sequence_number'))
         # 进行排序
         for (index, item) in enumerate(linked_questions_instance):
             item.sequence_number = index + 1
@@ -306,7 +314,8 @@ class PaperQuetionsView(APIView):
             paper_question_instance = PaperQuestions.objects.get(id=kwargs['id'])
         except PaperQuestions.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '编辑失败！试题绑定信息不存在，无法进行编辑！')
-        serializer = PaperQuestionsSerializer(paper_question_instance, request.data)
+        serializer = PaperQuestionsSerializer(
+            paper_question_instance, request.data)
         # 检查更新后的数据是否符合规则校验
         if serializer.is_valid():
             # 保存验证过的数据以更新现有的 PaperModule 实例
@@ -331,8 +340,10 @@ class PaperQuetionsView(APIView):
         except Exception:
             return api_response(ResponseCode.BAD_REQUEST, '没有找到该试卷相关信息！')
         # 获取需要编辑的试卷-试题实例（进行排序）
-        paper_question_instance = PaperQuestions.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
-        serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
+        paper_question_instance = PaperQuestions.objects.filter(
+            paper_id=kwargs['id']).order_by('sequence_number')
+        serializer = PaperQuestionsSerializer(
+            paper_question_instance, many=True)
         data = Response(serializer.data)
         return api_response(ResponseCode.SUCCESS, '获取试卷关联的试题信息成功', data.data)
 
@@ -340,7 +351,7 @@ class PaperQuetionsView(APIView):
 class PaperQuestionsSortView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    
+
     def put(self, request):
         """put 更新试卷-试题顺序
         Args:
@@ -349,13 +360,15 @@ class PaperQuestionsSortView(APIView):
         instance_suites = []
         for item in request.data['link_questions']:
             try:
-                paper_question_instance = PaperQuestions.objects.get(id=item['id'])
+                paper_question_instance = PaperQuestions.objects.get(
+                    id=item['id'])
                 paper_question_instance.sequence_number = item['index']
                 instance_suites.append(paper_question_instance)
             except Exception:
                 return api_response(ResponseCode.NOT_FOUND, '调整顺序失败！试卷不存在，无法进行调整！')
         # 批量更新
-        PaperQuestions.objects.bulk_update(instance_suites, ['sequence_number'])
+        PaperQuestions.objects.bulk_update(
+            instance_suites, ['sequence_number'])
         return api_response(ResponseCode.SUCCESS, '试卷重新排序成功！')
 
 
@@ -373,7 +386,7 @@ class PaperCopyView(APIView):
         for field in fields_to_remove:
             if field in instance_dict:
                 del instance_dict[field]
-    
+
     def post(self, request):
         """post 
             复制试卷信息（复制试卷本身信息以及试卷模块信息）
@@ -382,7 +395,8 @@ class PaperCopyView(APIView):
         """
         try:
             # 获取需要复制的试卷实例
-            paper_instance = model_to_dict(Paper.objects.get(id=request.data['id']))
+            paper_instance = model_to_dict(
+                Paper.objects.get(id=request.data['id']))
         except Paper.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '复制失败！试卷不存在，无法进行复制！')
         # ----- 复制 Paper -----
@@ -391,7 +405,8 @@ class PaperCopyView(APIView):
         # 更新试卷Title
         paper_instance['title'] = '复制 - ' + paper_instance['title']
         # 删除指定字段
-        fields_to_remove = ['updated_at', 'created_at', 'updated_user', 'id', 'is_published', 'publish_date']
+        fields_to_remove = ['updated_at', 'created_at',
+                            'updated_user', 'id', 'is_published', 'publish_date']
         self.__remove_fields(fields_to_remove, paper_instance)
         # 序列化数据
         serializer = PaperSerializer(data=paper_instance)
@@ -425,7 +440,7 @@ class PaperCopyView(APIView):
 class PaperPublishView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
-    
+
     def post(self, request):
         """post 发布试卷
         Args:
@@ -444,7 +459,7 @@ class PaperPublishView(APIView):
         paper.publish_date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         paper.save()
         return api_response(ResponseCode.SUCCESS, '试卷发布成功')
-    
+
     def delete(self, request):
         """delete 取消发布
         Args:
@@ -459,10 +474,10 @@ class PaperPublishView(APIView):
         paper.publish_date = None
         paper.save()
         return api_response(ResponseCode.SUCCESS, '取消发布成功')
-    
+
 
 class PaperForSelectorView(APIView):
-    
+
     def get(self, request):
         """get 查询试卷列表信息（用于选择器）
         Args:
@@ -470,16 +485,54 @@ class PaperForSelectorView(APIView):
         """
         user_id = request.query_params.get('user_id', None)
         # 执行查询
-        queryset = Paper.objects.filter(is_published=True).filter(Q(created_user=user_id) | Q(is_public=True)).order_by('-created_at')
+        queryset = Paper.objects.filter(is_published=True).filter(
+            Q(created_user=user_id) | Q(is_public=True)).order_by('-created_at')
         # 序列化试题数据
         serializer = PaperSerializer(queryset, many=True)
         # 计算实际总分
         for item in serializer.data:
             result = PaperQuestions.objects.filter(paper_id=item['id']).aggregate(actual_total=Sum('marks'))
             item['actual_total'] = result['actual_total']
-        resp = { 'total': len(queryset), 'data': serializer.data }
+        resp = {'total': len(queryset), 'data': serializer.data}
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
-    
+
+
+class PaperModuleQuestionView(APIView):
+
+    def get(self, _, **kwargs):
+        """get 根据ID查询试卷完整信息（用于查看试卷）
+        Args:
+            request (Object): 请求参数
+        """
+        try:
+            Paper.objects.get(id=kwargs['id'])
+        except Exception:
+            return api_response(ResponseCode.BAD_REQUEST, '没有找到该试卷相关信息！')
+
+        # 获取需要编辑的试卷-模块实例（进行排序）
+        paper_module_instance = PaperModule.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
+        module_serializer = PaperModuleSerializer(paper_module_instance, many=True)
+        modules_data = Response(module_serializer.data)
+
+        # 获取需要编辑的试卷-试题实例（进行排序）
+        paper_question_instance = PaperQuestions.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
+        questions_serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
+        questions_data = Response(questions_serializer.data)
+
+        # 数据处理结果
+        paper_modules_questions = []
+        for module in modules_data.data:
+            result_q = [
+                item for item in questions_data.data if item['module'] == module['id']]
+            paper_modules_questions.append({
+                'id':               module['id'],
+                'paper_id':         module['paper_id'],
+                'title':            module['title'],
+                'description':      module['description'],
+                'sequence_number':  module['sequence_number'],
+                'questions':        result_q
+            })
+        return api_response(ResponseCode.SUCCESS, '获取试卷详情成功', paper_modules_questions)
 
 
 if __name__ == '__main__':
