@@ -52,7 +52,10 @@ class Student(User):
     grade = models.CharField(max_length=30, null=True, blank=True, help_text='年级')
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['student_id', 'username', 'name', 'gender', 'role', 'is_active', 'is_deleted']
+    REQUIRED_FIELDS = [
+        'student_id', 'username', 'name', 'gender', 
+        'role', 'is_active', 'is_deleted'
+    ]
 
     def __str__(self):
         return 'Student: ' + self.username
@@ -72,7 +75,10 @@ class Teacher(User):
     teacher_id = models.CharField(max_length=30, unique=True, help_text='学号')
     
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['teacher_id', 'username', 'name', 'gender', 'role', 'is_active', 'is_deleted']
+    REQUIRED_FIELDS = [
+        'teacher_id', 'username', 'name', 'gender', 
+        'role', 'is_active', 'is_deleted'
+    ]
      
     def __str__(self):
         return 'Teacher: ' + self.username
