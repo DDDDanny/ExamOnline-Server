@@ -79,9 +79,7 @@ python3 manage.py loaddata initial_data.json
 
 ⚠️ 注意：导入预制数据前需要先进行migrate。由于预制数据会在开发过程中发生变化，如果更新预制数据，最好先清表，再重新导入。
 
-
 ---
-    PS：内容暂定，待完善。。。
 
 #### 启动项目
 
@@ -92,3 +90,10 @@ python manage.py runserver
 ```
 
 也可以配置Pycharm或是VSCode启动项
+
+---
+
+```
+PS：内容暂定，待完善。。。
+```
+
