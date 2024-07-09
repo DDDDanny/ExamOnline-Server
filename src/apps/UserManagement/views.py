@@ -63,13 +63,15 @@ class TeacherLoginView(APIView):
         """
         username = request.data.get('username')
         password = request.data.get('password')
+        # 标志是否为管理员登录
+        is_admin = request.data.get('isAdmin')
         try:
             user = Teacher.objects.get(username=username)
         except Exception:
             return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
         if user.is_deleted is True:
             return api_response(ResponseCode.BAD_REQUEST, '登录失败！用户不存在！')
-        if user.password == password:
+        if user.password == password and (not is_admin or user.role == 'admin'):
             refresh = CustomRefreshToken.for_user(user)
             data = {
                 'userId': user.id,
