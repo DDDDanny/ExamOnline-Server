@@ -26,7 +26,7 @@ class Questions(models.Model):
     type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='select', help_text='试题类型')
     # 试库类型
     TRIAL_TYPE_CHOICES = [('public', 'Public'),('private', 'Private')]
-    trial_type = models.CharField(max_length=10, choices=TRIAL_TYPE_CHOICES, default='select', help_text='所属题库类型')
+    trial_type = models.CharField(max_length=10, choices=TRIAL_TYPE_CHOICES, default='private', help_text='所属题库类型')
     # 试题状态
     status = models.BooleanField(default=True, help_text='试题状态')
     # 试题是否被删除
