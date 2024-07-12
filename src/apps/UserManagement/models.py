@@ -72,7 +72,7 @@ class Teacher(User):
         db_table = 'teacher'
     
     # 教师编号
-    teacher_id = models.CharField(max_length=30, unique=True, help_text='学号')
+    teacher_id = models.CharField(max_length=30, unique=True, help_text='教师编号')
     
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = [
