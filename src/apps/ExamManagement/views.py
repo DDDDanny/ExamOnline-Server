@@ -190,5 +190,28 @@ class ExamScheduleView(APIView):
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
+class ExamOnlineView(APIView):
+    """
+        ExamOnlineView 在线考试相关Views
+    """
+    # JWT校验
+    # permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """get 根据学生ID查询未结束的考试列表
+        Args:
+            request (Object): 请求参数（学生ID）
+        """
+        student_id = request.query_params.get('studentId', None)
+        exam_result_ids = ExamResult.objects.filter(student_id=student_id).values_list('exam_id', flat=True)
+        # 数据转换
+        exam_result_ids_str = [str(item) for item in list(exam_result_ids)]
+        now_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        exam_queryset = Exam.objects.filter(id__in=exam_result_ids_str).filter(end_time__gt=now_time).order_by('start_time')
+        # 序列化考试数据
+        serializer = ExamSerializer(exam_queryset, many=True)
+        return api_response(ResponseCode.SUCCESS, '查询成功', serializer.data)
+
+
 if __name__ == '__main__':
     pass
