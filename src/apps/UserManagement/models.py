@@ -14,7 +14,7 @@ class User(models.Model):
     class Meta:
         abstract = True
     
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, max_length=255)
     # 用户名
     username = models.CharField(max_length=30, unique=True, help_text='用户名')
     # 密码

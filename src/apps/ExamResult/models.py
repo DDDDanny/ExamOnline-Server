@@ -14,7 +14,7 @@ class ExamResult(models.Model):
     class Meta:
         db_table = 'exam_result'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, max_length=255)
     # 考试ID
     exam_id = models.CharField(max_length=255, help_text='考试ID')
     # 学生ID
@@ -35,7 +35,7 @@ class ExamResultDetail(models.Model):
     class Meta:
         db_table = 'exam_result_detail'
         
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, max_length=255)
     # 考试结果ID
     exam_result_id = models.CharField(max_length=255, help_text='考试结果ID')
     # 试题ID

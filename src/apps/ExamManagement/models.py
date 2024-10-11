@@ -14,7 +14,7 @@ class Exam(models.Model):
     class Meta:
         db_table = 'exam'
         
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, max_length=255)
     # 绑定试卷ID
     paper_id = models.CharField(max_length=255, help_text='绑定试卷ID')
     # 考试名称

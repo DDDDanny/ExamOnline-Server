@@ -13,7 +13,7 @@ class Menu(models.Model):
     class Meta:
         db_table = 'menu'
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(primary_key=True, default=uuid.uuid4, editable=False, max_length=255)
     # 菜单Code
     code = models.CharField(max_length=255, help_text='菜单Code')
     # 菜单名称
