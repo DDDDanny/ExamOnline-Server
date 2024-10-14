@@ -152,11 +152,11 @@ class ExamOnlineGetResultView(APIView):
         """get 在线考试页面使用 - 获取考生考试信息
         Args:
             request (Object): 
-                exam_id: 考试ID
-                student_id: 学生ID
+                examId: 考试ID
+                studentId: 学生ID
         """
-        exam_id = request.query_params.get('exam_id')
-        student_id = request.query_params.get('student_id')
+        exam_id = request.query_params.get('examId')
+        student_id = request.query_params.get('studentId')
         queryset = ExamResult.objects.filter(exam_id=exam_id).filter(student_id=student_id)
         if len(queryset) <= 0:
             return api_response(ResponseCode.BAD_REQUEST, '没有查询到对应的考试信息，请刷新后重试！')
