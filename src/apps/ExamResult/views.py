@@ -146,6 +146,25 @@ class ExamResultBaseView(APIView):
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
+class ExamOnlineGetResultView(APIView):
+    
+    def get(self, request):
+        """get 在线考试页面使用 - 获取考生考试信息
+        Args:
+            request (Object): 
+                exam_id: 考试ID
+                student_id: 学生ID
+        """
+        exam_id = request.query_params.get('exam_id')
+        student_id = request.query_params.get('student_id')
+        queryset = ExamResult.objects.filter(exam_id=exam_id).filter(student_id=student_id)
+        if len(queryset) <= 0:
+            return api_response(ResponseCode.BAD_REQUEST, '没有查询到对应的考试信息，请刷新后重试！')
+        # 序列化考试数据
+        serializer = ExamResultSerializer(queryset.first())
+        return api_response(ResponseCode.SUCCESS, '查询成功', serializer.data)
+        
+
 class ExamResultDetailBaseView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
