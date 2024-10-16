@@ -517,6 +517,9 @@ class PaperModuleQuestionView(APIView):
         # 获取需要编辑的试卷-试题实例（进行排序）
         paper_question_instance = PaperQuestions.objects.filter(paper_id=kwargs['id']).order_by('sequence_number')
         questions_serializer = PaperQuestionsSerializer(paper_question_instance, many=True)
+        # 删除answer字段，防止在答题阶段泄露
+        for item in questions_serializer.data:
+            del item['question_detail']['answer']
         questions_data = Response(questions_serializer.data)
 
         # 数据处理结果
