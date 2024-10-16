@@ -7,12 +7,13 @@
 from django.urls import path
 
 from .views import ExamBaseView, ExamPublishView, ExamScheduleView
-from .views import ExamOnlineView
+from .views import ExamOnlineView, ExamDetailView
 
 
 urlpatterns = [
      path('exam', ExamBaseView.as_view(), name='ExamOpts'),
      path('exam/<str:id>', ExamBaseView.as_view(), name='ExamOpts'),
+     path('examDetail', ExamDetailView.as_view(), name='ExamOpts'),
      path('examPublish/<str:id>', ExamPublishView.as_view(), name='ExamPublishOpts'),
      path('examSchedule', ExamScheduleView.as_view(), name='ExamOpts'),
      path('examOnline', ExamOnlineView.as_view(), name='ExamOnline'),
