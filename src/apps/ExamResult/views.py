@@ -76,7 +76,7 @@ class ExamResultBaseView(APIView):
             exam_result_instance = ExamResult.objects.get(id=kwargs['id'])
         except ExamResult.DoesNotExist:
             return api_response(ResponseCode.NOT_FOUND, '编辑失败！考试结果不存在，无法进行编辑！')
-        serializer = ExamResultSerializer(exam_result_instance, request.data)
+        serializer = ExamResultSerializer(exam_result_instance, request.data, partial=True)
         # 检查更新后的数据是否符合规则校验
         if serializer.is_valid():
             # 保存验证过的数据以更新现有的 ExamResult 实例
