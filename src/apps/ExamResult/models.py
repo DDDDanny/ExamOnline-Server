@@ -41,9 +41,9 @@ class ExamResultDetail(models.Model):
     # 试题ID
     question_id = models.CharField(max_length=255, help_text='试题ID')
     # 试题得分
-    mark = models.PositiveIntegerField(default=0, help_text='试题得分')
+    mark = models.FloatField(default=0, help_text='试题得分')
     # 学生作答结果
-    solution = models.TextField(max_length=500, default=None, help_text='学生作答结果')
+    solution = models.TextField(max_length=500, blank=True, null=True,help_text='学生作答结果')
     # 创建时间
     created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
 
