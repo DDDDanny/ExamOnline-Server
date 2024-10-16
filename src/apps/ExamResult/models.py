@@ -20,7 +20,7 @@ class ExamResult(models.Model):
     # 学生ID
     student_id = models.CharField(max_length=255, help_text='学生ID')
     # 总得分
-    result_mark = models.PositiveIntegerField(default=0, help_text='学生考试得分')
+    result_mark = models.FloatField(default=0, help_text='学生考试得分')
     # 学生开始考试的时间
     start_time = models.DateTimeField(blank=True, null=True, verbose_name='学生开始考试的时间')
     # 学生结束考试的时间
