@@ -118,6 +118,21 @@ class ExamBaseView(APIView):
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
+class ExamDetailView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """get 获取考试详情
+        Args:
+            id: 考试ID
+        """
+        id = request.query_params.get('id', None)
+        queryset = Exam.objects.filter(id=id).first()
+        serializer = ExamSerializer(queryset)
+        return api_response(ResponseCode.SUCCESS, '查询成功', serializer.data)
+
+
 class ExamPublishView(APIView):
     # JWT校验
     permission_classes = [IsAuthenticated]
