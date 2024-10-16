@@ -185,6 +185,7 @@ class ExamResultDetailBaseView(APIView):
         serializer_paper_questions = PaperQuestionsSerializer(paper_questions, many=True).data
         answers = meta_data['answers']
         result_detail_list = []
+        result_total_mark = 0
         for key in answers.keys():
             result_record = { 'exam_result_id': meta_data['exam_result_id'], 'question_id': key, 'solution': answers[key], 'mark': 0 }
             # 若学生没有答题，直接0分
@@ -193,12 +194,13 @@ class ExamResultDetailBaseView(APIView):
                 # 判断答案是否正确
                 if filter_res[0]['question_detail']['answer'] == answers[key]:
                     result_record['mark'] = filter_res[0]['marks']
+            result_total_mark += result_record['mark']
             result_detail_list.append(result_record)
         serializer = ExamResultDetailSerializer(data=result_detail_list, many=True)
         if serializer.is_valid():
             serializer.save()
             data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '创建成功', data.data)
+            return api_response(ResponseCode.SUCCESS, '创建成功', { "data": data.data, "result_total_mark": result_total_mark} )
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
