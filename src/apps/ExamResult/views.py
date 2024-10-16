@@ -9,6 +9,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import ExamResult, ExamResultDetail
+from src.apps.ExamManagement.models import Exam
+from src.apps.PaperManagement.models import PaperQuestions
+from src.apps.PaperManagement.serializers import PaperQuestionsSerializer
 from .serializers import ExamResultSerializer
 from .serializers import ExamResultDetailSerializer
 from src.utils.response_utils import ResponseCode, api_response
@@ -174,7 +177,24 @@ class ExamResultDetailBaseView(APIView):
         Args:
             request (Object): 请求参数
         """
-        serializer = ExamResultDetailSerializer(data=request.data)
+        meta_data = request.data
+        # 获取考试ID、试卷ID
+        exam_id = ExamResult.objects.filter(id=meta_data['exam_result_id']).first().exam_id
+        paper_id = Exam.objects.filter(id=exam_id).first().paper_id
+        paper_questions = PaperQuestions.objects.filter(paper_id=paper_id)
+        serializer_paper_questions = PaperQuestionsSerializer(paper_questions, many=True).data
+        answers = meta_data['answers']
+        result_detail_list = []
+        for key in answers.keys():
+            result_record = { 'exam_result_id': meta_data['exam_result_id'], 'question_id': key, 'solution': answers[key], 'mark': 0 }
+            # 若学生没有答题，直接0分
+            if answers[key] is not None:
+                filter_res = list(filter(lambda x: x['question_id'] == key, serializer_paper_questions))
+                # 判断答案是否正确
+                if filter_res[0]['question_detail']['answer'] == answers[key]:
+                    result_record['mark'] = filter_res[0]['marks']
+            result_detail_list.append(result_record)
+        serializer = ExamResultDetailSerializer(data=result_detail_list, many=True)
         if serializer.is_valid():
             serializer.save()
             data = Response(serializer.data)
