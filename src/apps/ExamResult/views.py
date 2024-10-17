@@ -4,12 +4,14 @@
 # @File    : views.py
 # @Describe: ExamResult应用视图层
 
+from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from .models import ExamResult, ExamResultDetail
 from src.apps.ExamManagement.models import Exam
+from src.apps.PaperManagement.models import Paper
 from src.apps.PaperManagement.models import PaperQuestions
 from src.apps.PaperManagement.serializers import PaperQuestionsSerializer
 from .serializers import ExamResultSerializer
@@ -180,8 +182,13 @@ class ExamResultDetailBaseView(APIView):
         meta_data = request.data
         # 获取考试ID、试卷ID
         exam_id = ExamResult.objects.filter(id=meta_data['exam_result_id']).first().exam_id
-        paper_id = Exam.objects.filter(id=exam_id).first().paper_id
-        paper_questions = PaperQuestions.objects.filter(paper_id=paper_id)
+        exam_info = Exam.objects.filter(id=exam_id).first()
+        # 及格分数
+        pass_mark = exam_info.pass_mark
+        # 试卷总分
+        sum_marks = PaperQuestions.objects.filter(
+                    paper_id=exam_info.paper_id).aggregate(actual_total=Sum('marks'))
+        paper_questions = PaperQuestions.objects.filter(paper_id=exam_info.paper_id)
         serializer_paper_questions = PaperQuestionsSerializer(paper_questions, many=True).data
         answers = meta_data['answers']
         result_detail_list = []
@@ -200,7 +207,13 @@ class ExamResultDetailBaseView(APIView):
         if serializer.is_valid():
             serializer.save()
             data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '创建成功', { "data": data.data, "result_total_mark": result_total_mark} )
+            return api_response(ResponseCode.SUCCESS, '创建成功', {
+                "data": data.data, 
+                "result_total_mark": result_total_mark, 
+                "sum_marks": sum_marks['actual_total'],
+                "percentage": (result_total_mark / sum_marks['actual_total']) * 100,
+                "pass_mark": pass_mark
+            })
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
