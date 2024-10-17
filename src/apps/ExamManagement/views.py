@@ -210,7 +210,7 @@ class ExamOnlineView(APIView):
         ExamOnlineView 在线考试相关Views
     """
     # JWT校验
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         """get 根据学生ID查询未结束的考试列表
@@ -227,6 +227,9 @@ class ExamOnlineView(APIView):
         serializer = ExamSerializer(exam_queryset, many=True)
         for item in serializer.data:
             item['is_start'] = True if now_time >= item['start_time'] else False
+            # 判断是否已经进入考试
+            start_time = ExamResult.objects.filter(exam_id=item['id']).filter(student_id=student_id).first().start_time
+            item['is_attend'] = True if start_time is not None else False
         return api_response(ResponseCode.SUCCESS, '查询成功', serializer.data)
 
 
