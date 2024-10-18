@@ -53,9 +53,9 @@ docker pull mysql:8.2
 docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=你的密码 -d mysql:8.2
 ```
 
-##### 新建数据库
+##### 创建数据库
 
-创建数据库，例如，数据库名称为：`exam_online`
+例如，数据库名称为：`exam_online`
 
 ---
 
@@ -63,7 +63,7 @@ docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=你的密码 -d mysq
 
 数据迁移前，需要修改项目下数据库的配置
 
-位置：`项目目录/ExamOnline/settings.py`
+位置：`项目目录/ExamOnline/settings.py`，找到👇配置进行修改
 
 ```python
 DATABASES = {
@@ -83,7 +83,7 @@ DATABASES = {
 
 #### 数据迁移
 
-数据库安装完成后，新建`exam_online`库，然后执行👇的命令
+配置修改完成后，执行👇的命令
 
 ```bash
 python manage.py makemigrations
