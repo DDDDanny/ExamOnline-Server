@@ -8,10 +8,12 @@ from rest_framework import serializers
 
 from .models import ExamResult, ExamResultDetail
 from ..UserManagement.models import Student
+from ..ExamManagement.models import Exam
 
 
 class ExamResultSerializer(serializers.ModelSerializer):
     student_info = serializers.SerializerMethodField()
+    exam_info = serializers.SerializerMethodField()
     
     class Meta:
         model = ExamResult
@@ -34,6 +36,18 @@ class ExamResultSerializer(serializers.ModelSerializer):
                 'id': student_instance.id,
                 'name': student_instance.name, 
                 'student_id': student_instance.student_id
+                # 可以再加需要的数据
+            }
+        else:
+            return None
+    
+    # 获取考试信息
+    def get_exam_info(self, obj):
+        exam_instance = Exam.objects.filter(id=obj.exam_id).first()
+        if exam_instance:
+            return {
+                'id': exam_instance.id,
+                'title': exam_instance.title, 
                 # 可以再加需要的数据
             }
         else:
