@@ -50,7 +50,33 @@ docker pull mysql:8.2
 ##### 启动容器  
 
 ```bash
-docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
+docker run -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD=你的密码 -d mysql:8.2
+```
+
+##### 新建数据库
+
+创建数据库，例如，数据库名称为：`exam_online`
+
+---
+
+#### 修改配置
+
+数据迁移前，需要修改项目下数据库的配置
+
+位置：`项目目录/ExamOnline/settings.py`
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '你的数据库名称',
+        'USER': 'root',
+        'PASSWORD': '你的数据库密码',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+        'TIME_ZONE': 'Asia/Shanghai'
+    }
+}
 ```
 
 ---
@@ -60,11 +86,11 @@ docker run -p 3306:3307 --name mysql -e MYSQL_ROOT_PASSWORD=123456 -d mysql:8.2
 数据库安装完成后，新建`exam_online`库，然后执行👇的命令
 
 ```bash
-python3 manage.py makemigrations
+python manage.py makemigrations
 ```
 
 ```bash
-python3 manage.py migrate
+python manage.py migrate
 ```
 
 数据迁移完成后，检查数据表
@@ -74,7 +100,7 @@ python3 manage.py migrate
 迁移完成后，导入预制`菜单项`、`教师用户`
 
 ```bash
-python3 manage.py loaddata initial_data.json
+python manage.py loaddata initial_data.json
 ```
 
 ⚠️ 注意：导入预制数据前需要先进行migrate。由于预制数据会在开发过程中发生变化，如果更新预制数据，最好先清表，再重新导入。
