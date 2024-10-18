@@ -8,6 +8,7 @@ from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from .models import ExamResult, ExamResultDetail
 from src.apps.ExamManagement.models import Exam
@@ -149,6 +150,29 @@ class ExamResultBaseView(APIView):
             data = Response(serializer_data)
             resp = { 'total': len(data.data), 'data': data.data }
             return api_response(ResponseCode.SUCCESS, '查询成功', resp)
+
+
+class ExamResultStudentView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """get 查询考试结果（学生端）
+        Args:
+            request (Object): 请求参数
+        """
+        student_id = request.query_params.get("student_id", None)
+        queryset = ExamResult.objects.filter(student_id=student_id).order_by('-updated_at')
+        # 实例化分页器并配置参数
+        paginator = PageNumberPagination()
+        paginator.page_size = int(request.query_params.get('pageSize', 50))
+        paginator.page_query_param = 'currentPage'
+        # 进行分页处理
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        # 序列化考试数据
+        serializer = ExamResultSerializer(paginated_queryset, many=True)
+        resp = { 'total': len(queryset), 'data': serializer.data }
+        return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
 class ExamOnlineGetResultView(APIView):
