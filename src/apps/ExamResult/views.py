@@ -163,15 +163,25 @@ class ExamResultStudentView(APIView):
         """
         student_id = request.query_params.get("student_id", None)
         queryset = ExamResult.objects.filter(student_id=student_id).order_by('-updated_at')
+        # 序列化数据
+        serializer_data = ExamResultSerializer(queryset, many=True).data
+        title_filter = request.query_params.get("title", None)  # 获取标题筛选参数
+        filter_datas = []
+        # 根据 exam_info.title 进行筛选
+        if title_filter:
+            for item in serializer_data:
+                if title_filter in item['exam_info']['title']:
+                    filter_datas.append(item)
+        else:
+            filter_datas = serializer_data
+
         # 实例化分页器并配置参数
         paginator = PageNumberPagination()
         paginator.page_size = int(request.query_params.get('pageSize', 50))
         paginator.page_query_param = 'currentPage'
         # 进行分页处理
-        paginated_queryset = paginator.paginate_queryset(queryset, request)
-        # 序列化考试数据
-        serializer = ExamResultSerializer(paginated_queryset, many=True)
-        resp = { 'total': len(queryset), 'data': serializer.data }
+        paginated_queryset = paginator.paginate_queryset(filter_datas, request)
+        resp = { 'total': len(filter_datas), 'data': paginated_queryset }
         return api_response(ResponseCode.SUCCESS, '查询成功', resp)
 
 
