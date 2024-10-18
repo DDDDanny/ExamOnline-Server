@@ -25,6 +25,8 @@ class ExamResult(models.Model):
     start_time = models.DateTimeField(blank=True, null=True, verbose_name='学生开始考试的时间')
     # 学生结束考试的时间
     end_time = models.DateTimeField(blank=True, null=True, verbose_name='学生结束考试的时间')
+    # 结束状态
+    ending_status = models.BooleanField(default=True, help_text='是否是正常结束考试')
     # 创建时间
     created_at = models.DateTimeField(default=timezone.now, help_text='创建时间')
     # 更新时间
