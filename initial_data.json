@@ -102,9 +102,20 @@
         "model": "MenuManagement.Menu",
         "fields": {
             "code": "10005",
-            "name": "成绩管理",
-            "is_show": "ALL",
+            "name": "成绩查询",
+            "is_show": "Teacher",
             "path": "/examResult",
+            "order": 5,
+            "parent_code": "0"
+        }
+    },
+    {
+        "model": "MenuManagement.Menu",
+        "fields": {
+            "code": "10005",
+            "name": "成绩查询",
+            "is_show": "Student",
+            "path": "/examResultStu",
             "order": 5,
             "parent_code": "0"
         }
