@@ -47,7 +47,8 @@ class ExamResultSerializer(serializers.ModelSerializer):
         if exam_instance:
             return {
                 'id': exam_instance.id,
-                'title': exam_instance.title, 
+                'title': exam_instance.title,
+                'paper_id': exam_instance.paper_id
                 # 可以再加需要的数据
             }
         else:
