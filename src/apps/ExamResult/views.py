@@ -12,7 +12,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import ExamResult, ExamResultDetail
 from src.apps.ExamManagement.models import Exam
-from src.apps.PaperManagement.models import Paper
+from src.apps.QuestionManagement.models import Questions
 from src.apps.PaperManagement.models import PaperQuestions
 from src.apps.PaperManagement.serializers import PaperQuestionsSerializer
 from .serializers import ExamResultSerializer
@@ -111,7 +111,7 @@ class ExamResultBaseView(APIView):
             serializer = ExamResultSerializer(exam_result_instance)
             # 返回序列化后的试题详情数据
             data = Response(serializer.data)
-            return api_response(ResponseCode.SUCCESS, '查询考试结果详情成功', data.data)
+            return api_response(ResponseCode.SUCCESS, '查询考试结果成功', data.data)
         else:
             # 定义查询参数和它们对应的模型字段
             query_params_mapping = {
@@ -265,6 +265,10 @@ class ExamResultDetailBaseView(APIView):
             return api_response(ResponseCode.NOT_FOUND, '没有找到该考试结果的详情信息！')
         else:
             serializer = ExamResultDetailSerializer(exam_result_detal_instance, many=True)
+            for item in serializer.data:
+                answer = Questions.objects.filter(id=item['question_id']).first().answer
+                item['is_true'] = True if answer == item['solution'] else False
+                item['reference_answer'] = answer
             data = Response(serializer.data)
             return api_response(ResponseCode.SUCCESS, '获取考试结果详情成功', data.data)
 
