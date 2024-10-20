@@ -235,12 +235,18 @@ class ExamOnlineView(APIView):
 
 
 class HomeExamStatisticsView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
     
-    def __handle_teacher(self, teacher_id):
+    def __handle_statistic_data(self, role, user_id):
         """ 
-        处理教师统计数据
+        处理统计数据
         """
-        exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(created_user=teacher_id)
+        if role == 'Teacher':
+            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(created_user=user_id)
+        else:
+            relation_exam_ids = ExamResult.objects.filter(student_id=user_id).values_list('exam_id', flat=True)
+            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(id__in=relation_exam_ids)
         exam_dates = exams_instance.values_list('start_time', flat=True)
         # 数据转换
         exam_dates_str = [str(item).split(' ')[0] for item in list(exam_dates)]
@@ -251,9 +257,6 @@ class HomeExamStatisticsView(APIView):
         # 筛选出今天的考试
         filter_today_count = exams_instance.filter(start_time__range=(start_of_day, end_of_day)).count()
         return exam_dates_str, filter_today_count
-
-    def __handle_student(self, student_id):
-        pass
     
     def get(self, request):
         role = request.query_params.get('role', None)
@@ -261,11 +264,8 @@ class HomeExamStatisticsView(APIView):
         if not role or not user_id:
             return api_response(ResponseCode.BAD_REQUEST, '参数错误！用户参数错误或缺失')
         else:
-            if role == 'Teacher':
-                exam_dates, filter_today_count = self.__handle_teacher(user_id)
-                return api_response(ResponseCode.SUCCESS, '查询成功', { 'exam_dates': exam_dates, 'count': filter_today_count })
-            else:
-                self.__handle_student(user_id)
+            exam_dates, filter_today_count = self.__handle_statistic_data(role, user_id)
+            return api_response(ResponseCode.SUCCESS, '查询成功', { 'exam_dates': exam_dates, 'count': filter_today_count })
 
 
 if __name__ == '__main__':
