@@ -6,6 +6,7 @@
 
 from datetime import datetime
 
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -231,6 +232,40 @@ class ExamOnlineView(APIView):
             start_time = ExamResult.objects.filter(exam_id=item['id']).filter(student_id=student_id).first().start_time
             item['is_attend'] = True if start_time is not None else False
         return api_response(ResponseCode.SUCCESS, '查询成功', serializer.data)
+
+
+class HomeExamStatisticsView(APIView):
+    
+    def __handle_teacher(self, teacher_id):
+        """ 
+        处理教师统计数据
+        """
+        exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(created_user=teacher_id)
+        exam_dates = exams_instance.values_list('start_time', flat=True)
+        # 数据转换
+        exam_dates_str = [str(item).split(' ')[0] for item in list(exam_dates)]
+        # 获取今天的开始和结束时间
+        today = timezone.now().date()
+        start_of_day = timezone.datetime.combine(today, timezone.datetime.min.time())
+        end_of_day = timezone.datetime.combine(today, timezone.datetime.max.time())
+        # 筛选出今天的考试
+        filter_today_count = exams_instance.filter(start_time__range=(start_of_day, end_of_day)).count()
+        return exam_dates_str, filter_today_count
+
+    def __handle_student(self, student_id):
+        pass
+    
+    def get(self, request):
+        role = request.query_params.get('role', None)
+        user_id = request.query_params.get('user_id', None)
+        if not role or not user_id:
+            return api_response(ResponseCode.BAD_REQUEST, '参数错误！用户参数错误或缺失')
+        else:
+            if role == 'Teacher':
+                exam_dates, filter_today_count = self.__handle_teacher(user_id)
+                return api_response(ResponseCode.SUCCESS, '查询成功', { 'exam_dates': exam_dates, 'count': filter_today_count })
+            else:
+                self.__handle_student(user_id)
 
 
 if __name__ == '__main__':
