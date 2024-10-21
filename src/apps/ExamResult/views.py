@@ -267,7 +267,7 @@ class ExamResultDetailBaseView(APIView):
             for item in serializer.data:
                 # 若存在学生ID，判断是否收藏该题目
                 if student_id:
-                    collected = ErrorArchive.objects.filter(collector=student_id).filter(question_id__in=item['question_id'])
+                    collected = ErrorArchive.objects.filter(collector=student_id).filter(question_id=item['question_id']).values()
                     item['is_error_archive'] = True if len(collected) != 0 else False
                 answer = Questions.objects.filter(id=item['question_id']).first().answer
                 item['is_true'] = True if answer == item['solution'] else False
