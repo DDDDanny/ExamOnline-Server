@@ -12,7 +12,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import ExamResult, ExamResultDetail
 from src.apps.ExamManagement.models import Exam
-from src.apps.QuestionManagement.models import Questions
+from src.apps.QuestionManagement.models import Questions, ErrorArchive
 from src.apps.PaperManagement.models import PaperQuestions
 from src.apps.PaperManagement.serializers import PaperQuestionsSerializer
 from .serializers import ExamResultSerializer
@@ -251,21 +251,24 @@ class ExamResultDetailBaseView(APIView):
         else:
             return api_response(ResponseCode.BAD_REQUEST, '创建失败', serializer.errors)
 
-    def get(self, _, **kwargs):
+    def get(self, request, **kwargs):
         """get 根据考试结果ID获取详情信息
         Args:
             _ (——): 缺省参数
             id：试卷ID
-        Returns:
-            list: 模块信息列表
         """
+        student_id = request.query_params.get('student_id', None)
         # 获取考试结果ID为入参的详情实例
         exam_result_detal_instance = ExamResultDetail.objects.filter(exam_result_id=kwargs['id'])
         if len(exam_result_detal_instance) == 0:
-            return api_response(ResponseCode.NOT_FOUND, '没有找到该考试结果的详情信息！')
+            return api_response(ResponseCode.NOT_FOUND, '没有找到该考试结果的 详情信息！')
         else:
             serializer = ExamResultDetailSerializer(exam_result_detal_instance, many=True)
             for item in serializer.data:
+                # 若存在学生ID，判断是否收藏该题目
+                if student_id:
+                    collected = ErrorArchive.objects.filter(collector=student_id).filter(question_id__in=item['question_id'])
+                    item['is_error_archive'] = True if len(collected) != 0 else False
                 answer = Questions.objects.filter(id=item['question_id']).first().answer
                 item['is_true'] = True if answer == item['solution'] else False
                 item['reference_answer'] = answer
