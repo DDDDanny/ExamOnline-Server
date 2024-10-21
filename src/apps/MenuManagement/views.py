@@ -38,7 +38,8 @@ class MenuBaseView(APIView):
         if is_show_value is None:
             return api_response(ResponseCode.BAD_REQUEST, '获取菜单失败！角色错误！')
         elif is_show_value == 'Admin':
-            queryset = Menu.objects.filter(parent_code='0').order_by('order')
+            queryset = Menu.objects.filter(parent_code='0').filter(Q(is_show=is_show_value) | Q(
+                    is_show='ALL')).order_by('order')
         else:
             if is_show_value == 'Teacher' or is_show_value == 'Student':
                 queryset = Menu.objects.filter(Q(is_show=is_show_value) | Q(
