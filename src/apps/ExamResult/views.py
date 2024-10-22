@@ -9,6 +9,7 @@ import os
 from openpyxl import Workbook
 from openpyxl.styles import Font
 from django.db.models import Sum
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -344,7 +345,7 @@ class GenerateExamResultExcel(APIView):
                 ws.column_dimensions[chr(col)].width = column_width
 
             # 指定目录路径
-            directory = 'ExamResultFiles/'
+            directory = settings.EXAM_RESULT_ROOT
             os.makedirs(directory, exist_ok=True)  # 确保目录存在
             file_name = '{}.xlsx'.format(exam_id)
             # 保存文件
