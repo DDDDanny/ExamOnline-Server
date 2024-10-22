@@ -10,6 +10,7 @@ from .views import ExamResultBaseView
 from .views import ExamResultDetailBaseView
 from .views import ExamOnlineGetResultView
 from .views import ExamResultStudentView
+from .views import GenerateExamResultExcel
 
 urlpatterns = [
     path('examResult', ExamResultBaseView.as_view(), name='ExamResultOpts'),
@@ -18,4 +19,5 @@ urlpatterns = [
     path('examResultDetail/<str:id>', ExamResultDetailBaseView.as_view(), name='ExamResultDetailOpts'),
     path('examOnlineGetResult', ExamOnlineGetResultView.as_view(), name='ExamOnlineGetResultOpts'),
     path('examResultStu', ExamResultStudentView.as_view(), name='ExamResultStudentOpts'),
+    path('generateExamResultExcel', GenerateExamResultExcel.as_view(), name='GenerateExamResultExcel'),
 ]
