@@ -182,3 +182,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 上传模版文件
 TEMPLATES_ROOT = 'TemplateFiles/'
+
+# 考试成绩单存储文件目录
+EXAM_RESULT_ROOT = 'ExamResultFiles/'
