@@ -26,5 +26,17 @@ class DownloadFileView(APIView):
             return api_response(ResponseCode.NOT_FOUND, '没有找到文件！')
 
 
+class DownloadResultFileView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, _, filename):
+        file_path = os.path.join(os.getcwd(), settings.EXAM_RESULT_ROOT, filename).replace('\\', '/')
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, "rb"), as_attachment=True)
+        else:
+            return api_response(ResponseCode.NOT_FOUND, '没有找到文件！')
+
+
 if __name__ == '__main__':
     pass
