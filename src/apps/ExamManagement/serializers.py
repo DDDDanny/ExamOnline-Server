@@ -34,6 +34,7 @@ class ExamSerializer(serializers.ModelSerializer):
             return {
                 'id': paper_instance.id,
                 'title': paper_instance.title, 
+                'total_marks': paper_instance.total_marks, 
                 # 可以再加需要的数据
             }
         else:
