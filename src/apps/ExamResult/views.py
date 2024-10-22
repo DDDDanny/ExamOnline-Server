@@ -4,6 +4,10 @@
 # @File    : views.py
 # @Describe: ExamResult应用视图层
 
+import os
+
+from openpyxl import Workbook
+from openpyxl.styles import Font
 from django.db.models import Sum
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,6 +16,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import ExamResult, ExamResultDetail
 from src.apps.ExamManagement.models import Exam
+from src.apps.ExamManagement.serializers import ExamSerializer
 from src.apps.QuestionManagement.models import Questions, ErrorArchive
 from src.apps.PaperManagement.models import PaperQuestions
 from src.apps.PaperManagement.serializers import PaperQuestionsSerializer
@@ -275,6 +280,79 @@ class ExamResultDetailBaseView(APIView):
             data = Response(serializer.data)
             return api_response(ResponseCode.SUCCESS, '获取考试结果详情成功', data.data)
 
+
+class GenerateExamResultExcel(APIView):
+    
+    def post(self, request):
+        try:
+            exam_id = request.data['exam_id']
+            exam_instance = Exam.objects.filter(id=exam_id).first()
+            exam_serializer = ExamSerializer(exam_instance)
+            exam_result_instance = ExamResult.objects.filter(exam_id=exam_id).order_by('-result_mark')
+            exam_result_datas = ExamResultSerializer(exam_result_instance, many=True).data
+            
+            # 创建一个新的工作簿
+            wb = Workbook()
+            ws = wb.active
+
+            # 定义总览标题和对应的数据
+            headers = [['考试名称', '试卷名称', '总分'], ['考试开始时间', '考试结束时间', '考试人数']]
+            datas = [[
+                exam_serializer.data['title'],
+                exam_serializer.data['paper_info']['title'],
+                exam_serializer.data['paper_info']['total_marks']
+            ],[
+                exam_serializer.data['start_time'],
+                exam_serializer.data['end_time'],
+                len(exam_result_datas)
+            ]]
+            # 总览数据填充
+            for index in range(len(headers)):
+                # 写入标题并设置加粗
+                for col, (header, data) in enumerate(zip(headers[index], datas[index]), start=1):
+                    if col == 1:
+                        cell = ws.cell(row=index + 1, column=col, value=header)
+                        cell.font = Font(bold=True)
+                        cell = ws.cell(row=index + 1, column=col + 1, value=data)
+                    else:
+                        cell = ws.cell(row=index + 1, column=2 * col - 1, value=header)
+                        cell.font = Font(bold=True)
+                        cell = ws.cell(row=index + 1, column=2 * col, value=data)
+            
+            # 定义主体表头数据并填充
+            students_result_header = ['学号', '学生姓名', '得分', '考试状态', '考试开始时间', '考试结束时间']
+            for index, item in enumerate(students_result_header):
+                cell = ws.cell(row=4, column=index+1, value=item)
+                cell.font = Font(bold=True)
+            
+            # 主体数据填充
+            for index, item in enumerate(exam_result_datas):
+                cell = ws.cell(row=index+5, column=1, value=item['student_info']['student_id'])
+                cell = ws.cell(row=index+5, column=2, value=item['student_info']['name'])
+                cell = ws.cell(row=index+5, column=3, value=item['result_mark'])
+                cell = ws.cell(row=index+5, column=4, value='正常' if item['ending_status'] else '异常退出' )
+                cell = ws.cell(row=index+5, column=5, value=item['start_time'])
+                cell = ws.cell(row=index+5, column=6, value=item['end_time'])
+
+            # 设置所有行的高度为 30
+            for row in range(1, len(exam_result_datas) + 6):
+                ws.row_dimensions[row].height = 30
+                
+            # 设置列 A 到 F 的宽度
+            column_width = 35  # 设置的宽度值
+            for col in range(ord('A'), ord('F') + 1):  # A到F的ASCII码范围
+                ws.column_dimensions[chr(col)].width = column_width
+
+            # 指定目录路径
+            directory = 'ExamResultFiles/'
+            os.makedirs(directory, exist_ok=True)  # 确保目录存在
+            file_name = '{}.xlsx'.format(exam_id)
+            # 保存文件
+            wb.save(os.path.join(directory, file_name))
+            return api_response(ResponseCode.SUCCESS, '生成成功', file_name)
+        except Exception as e:
+            return api_response(ResponseCode.BAD_REQUEST, '生成失败!', e)
+        
 
 if __name__ == '__main__':
     pass
