@@ -243,20 +243,26 @@ class HomeExamStatisticsView(APIView):
         处理统计数据
         """
         if role == 'Teacher':
-            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(created_user=user_id)
+            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(created_user=user_id).order_by('start_time')
         else:
             relation_exam_ids = ExamResult.objects.filter(student_id=user_id).values_list('exam_id', flat=True)
-            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(id__in=relation_exam_ids)
+            exams_instance = Exam.objects.filter(is_deleted=False, is_published=True).filter(id__in=relation_exam_ids).order_by('start_time')
+        exam_data = ExamSerializer(exams_instance, many=True).data
         exam_dates = exams_instance.values_list('start_time', flat=True)
         # 数据转换
         exam_dates_str = [str(item).split(' ')[0] for item in list(exam_dates)]
+        # 获取每天具体考试内容
+        exam_info = {}
+        for item in exam_dates_str:
+            temp_data = list(filter(lambda x: item in x['start_time'], exam_data))
+            exam_info[item] = temp_data
         # 获取今天的开始和结束时间
         today = timezone.now().date()
         start_of_day = timezone.datetime.combine(today, timezone.datetime.min.time())
         end_of_day = timezone.datetime.combine(today, timezone.datetime.max.time())
         # 筛选出今天的考试
         filter_today_count = exams_instance.filter(start_time__range=(start_of_day, end_of_day)).count()
-        return exam_dates_str, filter_today_count
+        return exam_dates_str, filter_today_count, exam_info
     
     def get(self, request):
         role = request.query_params.get('role', None)
@@ -264,8 +270,8 @@ class HomeExamStatisticsView(APIView):
         if not role or not user_id:
             return api_response(ResponseCode.BAD_REQUEST, '参数错误！用户参数错误或缺失')
         else:
-            exam_dates, filter_today_count = self.__handle_statistic_data(role, user_id)
-            return api_response(ResponseCode.SUCCESS, '查询成功', { 'exam_dates': exam_dates, 'count': filter_today_count })
+            exam_dates, filter_today_count, exam_info = self.__handle_statistic_data(role, user_id)
+            return api_response(ResponseCode.SUCCESS, '查询成功', { 'exam_dates': exam_dates, 'count': filter_today_count, 'exam_info': exam_info })
 
 
 if __name__ == '__main__':
