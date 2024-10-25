@@ -16,6 +16,17 @@ UPLOAD_STUDENT_MAPPING_TABLE = {
     '邮箱': 'email'
 }
 
+
+# 用于解析试题信息批量上传数据
+UPLOAD_QUESTION_MAPPING_TABLE = {
+    '试题标题': 'topic',
+    '试题类型': 'type',
+    '所属题库': 'trial_type',
+    '选项': 'options',
+    '参考答案': 'answer',
+}
+
+
 # 用于将单个字典中的中文字段名映射为英文字段名
 def translate_fields(record, mapping):
     return { mapping.get(key, key): value for key, value in record.items() }
