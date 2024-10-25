@@ -10,6 +10,7 @@ from .views import QuestionBaseView
 from .views import QuestionFavoriteView
 from .views import ErrorArchiveView
 from .views import QuestionsWarehouseForPaper
+from .views import UploadFileForQuestionsView
 
 
 urlpatterns = [
@@ -20,6 +21,7 @@ urlpatterns = [
     path('errorArchive', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
     path('errorArchive/<str:id>', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
     path('questionWarehouse', QuestionsWarehouseForPaper.as_view(), name='QuestionWarehouseOpts'),
+    path('uploadFileForQuestions', UploadFileForQuestionsView.as_view(), name='UploadFileForQuestionsOpts'),
 ]
 
 
