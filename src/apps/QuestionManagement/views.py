@@ -376,7 +376,7 @@ class QuestionsWarehouseForPaper(APIView):
 
 class UploadFileForQuestionsView(APIView):
     # JWT校验
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     
     def __analysis_data(self, data, creator):
         success_list, fail_list = [], []
@@ -389,7 +389,7 @@ class UploadFileForQuestionsView(APIView):
                 # 进行数据处理后，将数据放到成功组
                 question_instance = Questions()
                 question_instance.topic = item['topic']
-                question_instance.type = 'select' if item['type'] == '选择题' else '判断题'
+                question_instance.type = 'select' if item['type'] == '选择题' else 'judge'
                 question_instance.trial_type = 'public' if item['trial_type'] == '公共题库' else 'private'
                 question_instance.options = item['options']
                 question_instance.answer = item['answer']
