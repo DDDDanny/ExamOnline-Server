@@ -4,6 +4,9 @@
 # @File    : views.py
 # @Describe: Question相关视图
 
+
+import pandas as pd
+import numpy as np
 from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -14,6 +17,8 @@ from .models import Questions, QuestionsFavorite, ErrorArchive
 from .serializers import QuestionSerializer, QuestionFavoriteSerializer
 from .serializers import ErrorArchiveSerializer
 from src.utils.response_utils import ResponseCode, api_response
+from src.utils.mapping_table import UPLOAD_QUESTION_MAPPING_TABLE
+from src.utils.mapping_table import translate_fields
 
 
 class QuestionBaseView(APIView):
@@ -367,6 +372,60 @@ class QuestionsWarehouseForPaper(APIView):
         serializer = QuestionSerializer(questions_instance, many=True)
         data = Response(serializer.data)
         return api_response(ResponseCode.SUCCESS, '获取题库试题成功！', data.data)
+
+
+class UploadFileForQuestionsView(APIView):
+    # JWT校验
+    permission_classes = [IsAuthenticated]
+    
+    def __analysis_data(self, data, creator):
+        success_list, fail_list = [], []
+        for item in data:
+            required_keys = ['topic', 'type', 'trial_type', 'options', 'answer']
+            # 使用any()函数，如果任何一个键的值为None或'<NA>'，数据就放入失败组
+            if any(item.get(key) is None for key in required_keys):
+                fail_list.append(item)
+            else:
+                # 进行数据处理后，将数据放到成功组
+                question_instance = Questions()
+                question_instance.topic = item['topic']
+                question_instance.type = 'select' if item['type'] == '选择题' else '判断题'
+                question_instance.trial_type = 'public' if item['trial_type'] == '公共题库' else 'private'
+                question_instance.options = item['options']
+                question_instance.answer = item['answer']
+                question_instance.created_user = creator
+                success_list.append(question_instance)
+        return success_list, fail_list
+    
+    def post(self, request):
+        if 'QuestionsTemplateFile' in request.FILES:
+            excel_file = request.FILES['QuestionsTemplateFile']
+            user_id = request.data['userId']
+            try:
+                # 导入并清洗数据
+                df = pd.read_excel(excel_file)
+                df = df.replace(np.NAN, None, regex=True)
+                # 数据转换，为每个字典添加一个 'row_number' 键
+                list_of_dicts = []
+                for index, row in df.iterrows():
+                    row_dict = row.to_dict()
+                    row_dict['row_number'] = index
+                    list_of_dicts.append(row_dict)
+                translated_data = [translate_fields(record, UPLOAD_QUESTION_MAPPING_TABLE) for record in list_of_dicts]
+                # 数据解析处理
+                success, fail = self.__analysis_data(translated_data, user_id)
+                if success:
+                    Questions.objects.bulk_create(success)
+                    if fail:
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！部分新增成功！', { 'fail_list': fail })
+                    else:
+                        return api_response(ResponseCode.SUCCESS, 'Excel文件解析成功！全部新增成功！', { 'fail_list': fail })
+                else:
+                    return api_response(ResponseCode.BAD_REQUEST, 'Excel文件解析成功！全部新增失败！', { 'fail_list': fail })
+            except Exception as e:
+                return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '解析失败！存在错误信息！请检查单元格类型和必填信息！')
+        else:
+            return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
 
 
 if __name__ == '__main__':
