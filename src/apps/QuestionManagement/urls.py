@@ -11,6 +11,7 @@ from .views import QuestionFavoriteView
 from .views import ErrorArchiveView
 from .views import QuestionsWarehouseForPaper
 from .views import UploadFileForQuestionsView
+from .views import RandomSelectQuestionsView
 
 
 urlpatterns = [
@@ -22,6 +23,7 @@ urlpatterns = [
     path('errorArchive/<str:id>', ErrorArchiveView.as_view(), name='ErrorArchiveOpts'),
     path('questionWarehouse', QuestionsWarehouseForPaper.as_view(), name='QuestionWarehouseOpts'),
     path('uploadFileForQuestions', UploadFileForQuestionsView.as_view(), name='UploadFileForQuestionsOpts'),
+    path('randomSelectQuestions', RandomSelectQuestionsView.as_view(), name='RandomSelectQuestionsOpts'),
 ]
 
 
