@@ -4,6 +4,7 @@
 # @File    : views.py
 # @Describe: Question相关视图
 
+import random
 
 import pandas as pd
 import numpy as np
@@ -426,6 +427,33 @@ class UploadFileForQuestionsView(APIView):
                 return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '解析失败！存在错误信息！请检查单元格类型和必填信息！')
         else:
             return api_response(ResponseCode.INTERNAL_SERVER_ERROR, '文件上传失败！')
+
+
+class RandomSelectQuestionsView(APIView):
+    
+    def get(self, request):
+        user_id = request.query_params.get('userId', None)
+        random_type = request.query_params.get('randomQuestionType', None)
+        random_num = request.query_params.get('randomNumber', None)
+        # 获取操作者的收藏试题
+        favorite_questions_ids = list(QuestionsFavorite.objects.filter(collector=user_id).values_list('question_id', flat=True))
+        # 获取操作者相关题库实例
+        questions_instance = Questions.objects.filter(
+            status=True, is_deleted=False).filter(Q(created_user=user_id) | Q(id__in = favorite_questions_ids))
+        # 根据题型过滤
+        if random_type in ['select', 'judge']:
+            random_instance = questions_instance.filter(type=random_type)
+        else:
+            random_instance = questions_instance
+        serializer_data = QuestionSerializer(random_instance, many=True).data
+        # 检查随机数量是否合规
+        try:
+            if int(random_num) > len(serializer_data) or int(random_num) <= 0:
+                return api_response(ResponseCode.BAD_REQUEST, '参数错误！随机数量不能大于可选题总数或小于等于0')
+            random_data = random.sample(serializer_data, int(random_num))
+            return api_response(ResponseCode.SUCCESS, '获取题库试题成功！', random_data)
+        except Exception as e:
+            return api_response(ResponseCode.BAD_REQUEST, '参数错误！请输入正确的参数！')
 
 
 if __name__ == '__main__':
